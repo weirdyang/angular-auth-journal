@@ -14,15 +14,13 @@ export class ThemingService {
 
     let setting = localStorage.getItem('dark');
     if (Boolean(setting)) {
-      console.log('local-storage', setting)
       this.setDarkPreference(setting === 'true');
     } else {
-      const darkModeOn =
+      const isDarkPreferred =
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (darkModeOn) {
-        this.setDarkPreference(darkModeOn)
-      }
+
+      this.setDarkPreference(isDarkPreferred);
     }
   }
   setDarkPreference(setting: boolean) {

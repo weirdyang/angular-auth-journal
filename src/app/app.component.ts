@@ -14,4 +14,8 @@ export class AppComponent {
   constructor(private themeService: ThemingService) {
 
   }
+
+  toggleDarkMode(setting: boolean) {
+    this.themeService.setDarkPreference(setting);
+  }
 }

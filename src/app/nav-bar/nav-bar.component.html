@@ -26,11 +26,11 @@
       </button>
       <span>dark-mode</span>
       <span class="spacer"></span>
-      <button mat-button
-        [color]="(darkMode$ | async) ? 'accent' : 'primary'"
+      <button mat-icon-button
+        [color]="darkMode ? 'accent' : 'primary'"
         (click)="toggleDarkMode()">
         <mat-icon>
-          {{ (darkMode$ | async) ? 'lightbulb': 'nightlight_round'}}
+          {{ darkMode ? 'nightlight_round': ' light_mode' }}
         </mat-icon>
       </button>
     </mat-toolbar>

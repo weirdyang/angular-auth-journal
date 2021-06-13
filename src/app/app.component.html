@@ -1,1 +1,3 @@
-<dm-nav-bar [ngClass]="{ 'light' : !( darkMode$ | async) }"></dm-nav-bar>
+<dm-nav-bar [ngClass]="{ 'light' : !( darkMode$ | async) }"
+  [darkMode]="(darkMode$ | async)"
+  (toggleDarkEvent)="toggleDarkMode($event)"></dm-nav-bar>

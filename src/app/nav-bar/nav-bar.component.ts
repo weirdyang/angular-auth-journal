@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { ThemingService } from '../services/core/theming.service';
+
 
 @Component({
   selector: 'dm-nav-bar',
@@ -16,27 +17,16 @@ export class NavBarComponent {
       map(result => result.matches),
       shareReplay()
     );
-
-  darkMode$ = this
-    .themeService
-    .darkMode$
-    .pipe(
-      tap(val => this.darkModeSetting = val)
-    );
-  private _darkModeSetting!: boolean;
-
-  get darkModeSetting() {
-    return this._darkModeSetting;
-  }
-
-  set darkModeSetting(val) {
-    this._darkModeSetting = val;
-  }
+  @Input()
+  darkMode!: boolean | null;
 
   constructor(private breakpointObserver: BreakpointObserver,
     private themeService: ThemingService) { }
 
+  @Output()
+  toggleDarkEvent = new EventEmitter<boolean>();
+
   toggleDarkMode() {
-    this.themeService.setDarkPreference(!this.darkModeSetting);
+    this.toggleDarkEvent.emit(!this.darkMode);
   }
 }
