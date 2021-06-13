@@ -1,0 +1,40 @@
+@use '~@angular/material' as mat;
+@use '../app/nav-bar/_nav-bar-theme' as side-nav;
+
+@include mat.core();
+
+//Define a light theme
+$light-primary: mat.define-palette(mat.$indigo-palette);
+$light-accent: mat.define-palette(mat.$pink-palette);
+
+$light-theme: mat.define-light-theme((
+ color: (
+   primary: $light-primary,
+   accent: $light-accent,
+ )
+));
+
+//Define a dark theme
+$dark-primary: mat.define-palette(mat.$pink-palette);
+$dark-accent: mat.define-palette(mat.$blue-gray-palette);
+$dark-theme: mat.define-dark-theme((
+ color: (
+   primary: $dark-primary,
+   accent: $dark-accent,
+ )
+));
+
+//Apply the dark theme by default
+// @include mat.core-theme($dark-theme);
+// @include mat.button-theme($dark-theme);
+// @include mat.toolbar-theme($dark-theme);
+// @deprecated Use `all-component-colors`.
+// @include  mat.angular-material-color($dark-theme);
+ @include mat.all-component-themes($dark-theme);
+ @include side-nav.theme($dark-theme);
+// Apply the light theme only when the `.my-light-theme` CSS class is applied
+// to an ancestor element of the components (such as `body`).
+.light {
+ @include mat.all-component-themes($light-theme);
+ @include side-nav.theme($light-theme);
+}

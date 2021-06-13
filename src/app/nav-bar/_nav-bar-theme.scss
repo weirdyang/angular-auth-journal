@@ -1,0 +1,22 @@
+@use 'sass:map';
+@use '~@angular/material' as mat;
+
+@mixin color($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($theme);
+
+  // Get the primary color palette from the color-config.
+  $primary-palette: map.get($color-config, 'primary');
+  $accent-palette: map.get($color-config, 'accent');
+    .mat-toolbar.mat-primary {
+        background: mat.get-color-from-palette($accent-palette, 200);
+        color: mat.get-color-from-palette($accent-palette, '200-contrast')
+    }
+  }
+
+  @mixin theme($theme) {
+    $color-config: mat.get-color-config($theme);
+    @if $color-config != null {
+      @include color($theme);
+    }
+  }
