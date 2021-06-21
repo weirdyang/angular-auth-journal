@@ -32,6 +32,9 @@ $dark-theme: mat.define-dark-theme((
 // @include  mat.angular-material-color($dark-theme);
  @include mat.all-component-themes($dark-theme);
  @include side-nav.theme($dark-theme);
+ body {
+     background: black
+ }
 // Apply the light theme only when the `.my-light-theme` CSS class is applied
 // to an ancestor element of the components (such as `body`).
 .light {

@@ -1,0 +1,30 @@
+<section *ngIf="profile$ | async as profile; else loading">
+    <mat-card>
+        <mat-card-header>
+            <mat-icon mat-card-avatar
+                svgIcon="{{profile.avatar}}"></mat-icon>
+            <mat-card-title>{{ profile.username }}</mat-card-title>
+            <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <mat-tab-group>
+                <mat-tab label='Recent Entries'>
+                    <p>
+                        last 5 entries
+                    </p>
+                </mat-tab>
+                <mat-tab label='Journal Entries'>
+                    <p>
+                        all journal entries
+                    </p>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-button>FOLLOW</button>
+        </mat-card-actions>
+    </mat-card>
+</section>
+<ng-template #loading>
+    <mat-spinner></mat-spinner>
+</ng-template>

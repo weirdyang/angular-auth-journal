@@ -1,0 +1,1 @@
+export const avatars = ['chamomile', 'orange', 'tea-tree', 'rose', 'rosemary', 'leaf']

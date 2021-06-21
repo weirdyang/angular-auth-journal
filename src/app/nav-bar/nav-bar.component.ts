@@ -3,7 +3,11 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { ThemingService } from '../services/core/theming.service';
-
+interface MenuItem {
+  name: string;
+  path: string;
+  icon: string;
+}
 
 @Component({
   selector: 'dm-nav-bar',
@@ -11,7 +15,9 @@ import { ThemingService } from '../services/core/theming.service';
   styleUrls: ['./nav-bar.component.scss']
 })
 export class NavBarComponent {
-
+  menuItems: Array<MenuItem> = [{
+    name: 'leaf', path: 'leaf', icon: 'leaf'
+  }]
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),

@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { avatars } from './config';
 import { ThemingService } from './services/core/theming.service';
 
 @Component({
@@ -11,8 +14,11 @@ export class AppComponent {
 
   darkMode$ = this.themeService.darkMode$;
 
-  constructor(private themeService: ThemingService) {
-
+  constructor(private themeService: ThemingService, iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
+    iconRegistry.addSvgIconSet(sanitizer.bypassSecurityTrustResourceUrl('assets/svg/avatars.svg'))
+    avatars.forEach(name =>
+      iconRegistry.
+        addSvgIcon(name, sanitizer.bypassSecurityTrustResourceUrl(`assets/svg/${name}.svg`)))
   }
 
   toggleDarkMode(setting: boolean) {
