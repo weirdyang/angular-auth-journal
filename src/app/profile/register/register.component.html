@@ -17,7 +17,7 @@
         <input matInput>
     </mat-form-field>
     <mat-form-field appearance="fill">
-        <mat-label>password</mat-label>
+        <mat-label>Password</mat-label>
         <input matInput
             formControlName="password"
             type="password"
@@ -25,23 +25,18 @@
         <input matInput>
     </mat-form-field>
     <mat-form-field appearance="fill">
-        <mat-label>Input</mat-label>
-        <mat-select placeholder="Select category"
+        <mat-label>Avatar</mat-label>
+        <mat-select placeholder="Select avatar"
             formControlName="avatar">
-
-            <option value="BEGINNER">
-                Beginner</option>
-            <option value="INTERMEDIATE">
-                Intermediate</option>
-            <option value="ADVANCED">
-                Advanced</option>
-
+            <mat-option value="one">First option</mat-option>
+            <mat-option value="two">Second option</mat-option>
         </mat-select>
     </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-raised-button
         color="primary"
+        [disabled]="!form.valid"
         (click)="save()">
         <mat-icon>save</mat-icon>
     </button>

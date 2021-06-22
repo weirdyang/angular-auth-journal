@@ -30,7 +30,7 @@ export class NavBarComponent implements OnDestroy {
   darkMode!: boolean | null;
 
   constructor(private breakpointObserver: BreakpointObserver,
-    private dialog: MatDialog,
+    public dialog: MatDialog,
     private themeService: ThemingService) { }
 
   @Output()
