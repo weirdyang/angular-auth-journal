@@ -11,6 +11,7 @@ import { RegisterUser } from 'src/app/types/user';
 })
 export class RegisterComponent implements OnInit {
   form!: FormGroup
+  get password() { return this.form.get('password'); }
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<RegisterComponent>,
@@ -22,7 +23,13 @@ export class RegisterComponent implements OnInit {
       username: [username, Validators.required],
       email: [email, Validators.required],
       avatar: [avatar, Validators.required],
-      password: [password, Validators.required]
+      password: [
+        password,
+        [
+          Validators.required,
+          Validators.pattern(/^(?=\D*\d)(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z]).{8,30}$/)
+        ]
+      ],
     });
 
   }
