@@ -43,6 +43,7 @@ export class NavBarComponent implements OnDestroy {
     this.dialogRef = this.dialog.open(RegisterComponent, {
       width: '450px',
       data: new RegisterUser(),
+      disableClose: true
     })
     this.dialogSubscription = this.dialogRef
       .afterClosed()

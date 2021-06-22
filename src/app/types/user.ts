@@ -23,3 +23,8 @@ export class RegisterUser implements IRegisterUser {
     avatar!: string;
     email!: string;
 }
+
+export interface IApiResponse {
+    message: string;
+    hasError: boolean;
+}

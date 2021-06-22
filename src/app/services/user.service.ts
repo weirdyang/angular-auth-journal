@@ -23,7 +23,7 @@ export class UserService {
     return EMPTY;
   }
   getProfile(username: string) {
-    return this.http.get<Profile>(`${this.apiUrl}/profile/${username}`)
+    return this.http.get<Profile>(`${this.apiUrl}/users/profile/${username}`)
       .pipe(
         catchError(error => this.handleError(error)),
       );

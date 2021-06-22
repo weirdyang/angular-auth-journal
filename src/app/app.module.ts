@@ -33,8 +33,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatListModule,
     ProfileModule,
     HttpClientModule,
-    MatSelectModule,
-    ReactiveFormsModule
+    // MatSelectModule,
+    // ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

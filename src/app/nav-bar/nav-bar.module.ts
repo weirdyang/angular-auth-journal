@@ -12,6 +12,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProfileModule } from '../profile/profile.module';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { RegisterModule } from '../profile/register/register.module';
 @NgModule({
   declarations: [NavBarComponent],
   imports: [
@@ -25,7 +28,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     RouterModule,
     MatMenuModule,
     MatTooltipModule,
-    MatDialogModule,
+    RegisterModule
   ],
   exports: [NavBarComponent, MatButtonModule]
 })
