@@ -4,9 +4,22 @@ export interface Profile {
     avatar: string;
 }
 
-export interface User {
+export interface IUser {
     id: string;
     email: string;
     username: string;
     avatar: string;
+}
+
+export interface IRegisterUser extends IUser {
+    password: string;
+}
+
+
+export class RegisterUser implements IRegisterUser {
+    password!: string;
+    id!: string;
+    username!: string;
+    avatar!: string;
+    email!: string;
 }

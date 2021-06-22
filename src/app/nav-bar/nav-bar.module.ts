@@ -8,8 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { NavBarComponent } from './nav-bar.component';
 import { RouterModule } from '@angular/router';
-
-
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProfileModule } from '../profile/profile.module';
+import { MatDialogModule } from '@angular/material/dialog';
 @NgModule({
   declarations: [NavBarComponent],
   imports: [
@@ -20,7 +22,10 @@ import { RouterModule } from '@angular/router';
     MatSidenavModule,
     MatIconModule,
     MatListModule,
-    RouterModule
+    RouterModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatDialogModule,
   ],
   exports: [NavBarComponent, MatButtonModule]
 })

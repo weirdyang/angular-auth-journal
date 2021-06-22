@@ -1,1 +1,55 @@
-<p>register works!</p>
+<h2 mat-dialog-title>Register</h2>
+<mat-dialog-content class="dialog-container"
+    [formGroup]="form">
+    <mat-form-field appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput
+            type="text"
+            formControlName="username"
+            placeholder="Username">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput
+            type="email"
+            formControlName="email"
+            placeholder="Email">
+        <input matInput>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>password</mat-label>
+        <input matInput
+            formControlName="password"
+            type="password"
+            placeholder="password">
+        <input matInput>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Input</mat-label>
+        <mat-select placeholder="Select category"
+            formControlName="avatar">
+
+            <option value="BEGINNER">
+                Beginner</option>
+            <option value="INTERMEDIATE">
+                Intermediate</option>
+            <option value="ADVANCED">
+                Advanced</option>
+
+        </mat-select>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button
+        color="primary"
+        (click)="save()">
+        <mat-icon>save</mat-icon>
+    </button>
+    <button mat-raised-button
+        color="primary"
+        click="dismiss()">
+        <mat-icon>
+            cancel
+        </mat-icon>
+    </button>
+</mat-dialog-actions>

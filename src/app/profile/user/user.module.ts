@@ -17,6 +17,9 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatProgressSpinnerModule,
     MatCardModule,
     MatTabsModule
+  ],
+  exports: [
+    UserComponent
   ]
 })
 export class UserModule { }

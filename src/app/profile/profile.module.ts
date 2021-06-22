@@ -12,6 +12,9 @@ import { ProfileComponent } from './profile.component';
   imports: [
     CommonModule,
     ProfileRoutingModule
+  ],
+  exports: [
+    
   ]
 })
 export class ProfileModule { }

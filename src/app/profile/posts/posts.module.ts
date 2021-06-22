@@ -12,6 +12,9 @@ import { PostsComponent } from './posts.component';
   imports: [
     CommonModule,
     PostsRoutingModule
+  ],
+  exports: [
+    PostsComponent
   ]
 })
 export class PostsModule { }

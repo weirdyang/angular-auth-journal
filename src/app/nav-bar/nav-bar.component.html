@@ -28,8 +28,29 @@
       <span>dark-mode</span>
       <span class="spacer"></span>
       <button mat-icon-button
+        [matMenuTriggerFor]="menu"
+        matToolTip="Manage account"
+        [color]="
+        darkMode
+        ? 'accent'
+        : 'primary'"
+        aria-label="Example icon-button with a menu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item
+          (click)="openRegisterDialog()">
+          <mat-icon>person_add</mat-icon>
+          <span>Register</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>login</mat-icon>
+          <span>Login</span>
+        </button>
+      </mat-menu>
+      <button mat-icon-button
         aria-label="Toggle dark mode"
-        mattooltip="Toggle dark mode"
+        matTooltip="Toggle dark mode"
         [color]="
         darkMode
         ? 'accent'
