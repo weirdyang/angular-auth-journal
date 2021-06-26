@@ -11,12 +11,13 @@ export interface IUser {
     avatar: string;
 }
 
-export interface IRegisterUser extends IUser {
+export interface ILogin {
+    email: string;
     password: string;
 }
 
 
-export class RegisterUser implements IRegisterUser {
+export class RegisterUser {
     password!: string;
     id!: string;
     username!: string;

@@ -3,9 +3,10 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { ThemingService } from '../services/core/theming.service';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { RegisterComponent } from '../profile/register/register.component';
-import { RegisterUser } from '../types/user';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { LoginComponent } from '../profile/login/login.component';
 interface MenuItem {
   name: string;
   path: string;
@@ -30,25 +31,43 @@ export class NavBarComponent implements OnDestroy {
   darkMode!: boolean | null;
 
   constructor(private breakpointObserver: BreakpointObserver,
+    private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private themeService: ThemingService) { }
 
   @Output()
   toggleDarkEvent = new EventEmitter<boolean>();
 
-  dialogRef!: MatDialogRef<RegisterComponent, any>;
   dialogSubscription?: Subscription;
 
   openRegisterDialog() {
-    this.dialogRef = this.dialog.open(RegisterComponent, {
+    const dialogRef = this.dialog.open(RegisterComponent, {
       width: '450px',
-      data: new RegisterUser(),
       disableClose: true
     })
-    this.dialogSubscription = this.dialogRef
+    this.dialogSubscription = dialogRef
       .afterClosed()
-      .subscribe(result => console.log('dialog closed', result))
+      .subscribe(result => {
+        if (result) {
+          this.snackBar.open(result, 'OK');
+        }
+      });
   }
+
+  openLoginDialog() {
+      const dialogRef = this.dialog.open(LoginComponent, {
+        width: '450px',
+        disableClose: true
+      })
+      this.dialogSubscription = dialogRef
+        .afterClosed()
+        .subscribe(result => {
+          if (result) {
+            this.snackBar.open(result, 'OK');
+          }
+        });
+    }
+
   toggleDarkMode() {
     this.toggleDarkEvent.emit(!this.darkMode);
   }

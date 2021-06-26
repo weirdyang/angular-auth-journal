@@ -3,13 +3,23 @@ import { Injectable } from '@angular/core';
 import { EMPTY, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { IApiResponse, Profile, RegisterUser } from '../types/user';
+import { IApiResponse, ILogin, IUser, Profile, RegisterUser } from '../types/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   apiUrl = environment.userApi;
+
+  private _currentUser?: IUser;
+
+  get currentUser() {
+    return this._currentUser;
+  }
+
+  set currentUser(value) {
+    this._currentUser = value;
+  }
   handleError(err: any): Observable<IApiResponse> {
     let errorMessage: string = '';
     if (err.error instanceof ErrorEvent) {
@@ -27,6 +37,15 @@ export class AuthService {
     console.error(errorMessage);
     return of({ message: errorMessage, hasError: true });
   }
+
+  loginUser(user: ILogin) {
+    console.log(user);
+    return this.http.post<IUser>(`${this.apiUrl}/auth/login`, user)
+      .pipe(
+        catchError(error => this.handleError(error)),
+      );
+  }
+
   registerUser(user: RegisterUser) {
     return this.http.post<IApiResponse>(`${this.apiUrl}/auth/register`, user)
       .pipe(

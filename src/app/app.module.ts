@@ -13,8 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProfileModule } from './profile/profile.module';
 import { HttpClientModule } from '@angular/common/http';
-import { MatSelectModule } from '@angular/material/select';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -33,8 +31,6 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatListModule,
     ProfileModule,
     HttpClientModule,
-    // MatSelectModule,
-    // ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

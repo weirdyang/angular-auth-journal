@@ -1,1 +1,42 @@
-<p>login works!</p>
+<h2 mat-dialog-title>Login</h2>
+<mat-dialog-content class="dialog-container"
+    [formGroup]="form">
+    <mat-form-field appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput
+            type="email"
+            formControlName="email"
+            placeholder="Username">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput
+            formControlName="password"
+            [type]="hide ? 'password' : 'text'"
+            placeholder="password">
+        <button mat-icon-button
+            matSuffix
+            (click)="hide = !hide"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="password?.invalid && !password?.hasError('required')">Password must be at least 8
+            characters</mat-error>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button
+        color="primary"
+        [disabled]="!form.valid"
+        (click)="submit()">
+        <mat-icon>save</mat-icon>
+    </button>
+    <button mat-raised-button
+        color="primary"
+        (click)="dismiss()">
+        <mat-icon>
+            cancel
+        </mat-icon>
+    </button>
+</mat-dialog-actions>

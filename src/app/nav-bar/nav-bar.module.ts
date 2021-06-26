@@ -10,11 +10,9 @@ import { NavBarComponent } from './nav-bar.component';
 import { RouterModule } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ProfileModule } from '../profile/profile.module';
-import { MatDialogModule } from '@angular/material/dialog';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
 import { RegisterModule } from '../profile/register/register.module';
+import { LoginModule } from '../profile/login/login.module';
+import { MatDialogModule } from '@angular/material/dialog';
 @NgModule({
   declarations: [NavBarComponent],
   imports: [
@@ -28,7 +26,8 @@ import { RegisterModule } from '../profile/register/register.module';
     RouterModule,
     MatMenuModule,
     MatTooltipModule,
-    RegisterModule
+    RegisterModule,
+    LoginModule
   ],
   exports: [NavBarComponent, MatButtonModule]
 })
