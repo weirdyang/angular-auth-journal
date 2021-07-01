@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  userApi: 'api'
+  userApi: 'api',
+  journalApi: 'api',
+  authApi: 'api'
 };
 
 /*

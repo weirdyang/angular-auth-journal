@@ -1,0 +1,9 @@
+<button (click)="submit()">Post</button>
+<input type="text"
+    [(ngModel)]="journal.title">
+<div id="editor">
+    <textarea [(ngModel)]="journal.entry">
+        </textarea>
+    <div class="code"
+        [innerHTML]="converted"></div>
+</div>

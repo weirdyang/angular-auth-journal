@@ -8,6 +8,7 @@ import { RegisterComponent } from '../profile/register/register.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoginComponent } from '../profile/login/login.component';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 interface MenuItem {
   name: string;
   path: string;
@@ -21,7 +22,7 @@ interface MenuItem {
 })
 export class NavBarComponent implements OnDestroy, OnInit {
   menuItems: Array<MenuItem> = [{
-    name: 'leaf', path: 'leaf', icon: 'leaf'
+    name: 'leaf', path: 'profile/posts', icon: 'leaf'
   }]
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -29,16 +30,21 @@ export class NavBarComponent implements OnDestroy, OnInit {
       shareReplay()
     );
 
-  isAuthenticated$ = this.authService.isAuthenticated$
+  get isAuthenticated() {
+    return this.authService.isAuthenticated;
+  }
   @Input()
   darkMode!: boolean | null;
 
   constructor(private breakpointObserver: BreakpointObserver,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private router: Router) { }
   ngOnInit(): void {
-    this.authService.getCsrfToken().subscribe();
+    this.authService
+      .getCsrfToken()
+      .subscribe();
   }
 
   @Output()
@@ -75,7 +81,9 @@ export class NavBarComponent implements OnDestroy, OnInit {
   }
 
   logOut() {
-    this.authService.logOut().subscribe();
+    this.authService.logOut().subscribe({
+      next: _ => this.router.navigateByUrl('/')
+    });
   }
   toggleDarkMode() {
     this.toggleDarkEvent.emit(!this.darkMode);

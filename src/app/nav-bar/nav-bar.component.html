@@ -38,7 +38,7 @@
         <mat-icon>account_circle</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <div *ngIf="!(isAuthenticated$ | async)">
+        <div *ngIf="!isAuthenticated">
           <button mat-menu-item
             (click)="openRegisterDialog()">
             <mat-icon>person_add</mat-icon>
@@ -50,7 +50,7 @@
             <span>Login</span>
           </button>
         </div>
-        <div *ngIf="(isAuthenticated$ | async)">
+        <div *ngIf="isAuthenticated">
           <button mat-menu-item
             (click)="logOut()">
             <mat-icon>exit_to_app</mat-icon>

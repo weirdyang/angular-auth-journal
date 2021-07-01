@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { map, tap } from 'rxjs/operators';
+import { JournalService } from 'src/app/services/journal.service';
 
 @Component({
   selector: 'dm-posts',
@@ -7,9 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PostsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private journalService: JournalService) { }
 
   ngOnInit(): void {
+    this.journalService.getAllJournals()
+      .pipe(
+        tap(res => console.log(res)),
+        tap(_ => console.log('ok')),
+      ).subscribe();
   }
 
 }

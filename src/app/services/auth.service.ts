@@ -15,25 +15,37 @@ export class AuthService {
   logOut() {
     return this.http.get(`${this.apiUrl}/auth/logout`)
       .pipe(
-        tap(_ => this._authenticatedSubject.next(false)),
-        tap(_ => this.currentUser = null)
+        tap(_ => this.deleteUser())
       )
   }
   apiUrl = environment.userApi;
 
-  private _currentUser?: IUser | null;
+  USER_KEY = 'user_info'
+  private _currentUserSubject = new BehaviorSubject<IUser | null>(null);
 
-  get currentUser() {
-    return this._currentUser;
+  public currentUser$ = this._currentUserSubject
+    .asObservable()
+    .pipe(shareReplay(1))
+
+  get isAuthenticated() {
+    return this.getUser() !== null;
   }
 
-  set currentUser(value) {
-    this._currentUser = value;
+  setUser = (user: Record<string, any>) => {
+    window.localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this._currentUserSubject.next(user as IUser);
   }
-  private _authenticatedSubject = new BehaviorSubject<boolean>(false);
-  public isAuthenticated$ = this._authenticatedSubject.asObservable()
-    .pipe(shareReplay(1));
-
+  deleteUser = () => {
+    window.localStorage.removeItem(this.USER_KEY);
+    this._currentUserSubject.next(null);
+  }
+  getUser = (): IUser | null => {
+    const user = window.localStorage.getItem(this.USER_KEY);
+    if (user) {
+      return JSON.parse(user);
+    }
+    return null;
+  };
 
   handleError(err: any): Observable<never> {
     let errorMessage: string = '';
@@ -60,8 +72,7 @@ export class AuthService {
     return this.http.post<IUser>(`${this.apiUrl}/auth/login`, user)
       .pipe(
         catchError(error => this.handleError(error)),
-        tap(user => this.currentUser = user),
-        tap(_ => this._authenticatedSubject.next(true))
+        tap(user => this.setUser(user))
       );
   }
 
