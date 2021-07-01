@@ -38,16 +38,25 @@
         <mat-icon>account_circle</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item
-          (click)="openRegisterDialog()">
-          <mat-icon>person_add</mat-icon>
-          <span>Register</span>
-        </button>
-        <button mat-menu-item
-          (click)="openLoginDialog()">
-          <mat-icon>login</mat-icon>
-          <span>Login</span>
-        </button>
+        <div *ngIf="!(isAuthenticated$ | async)">
+          <button mat-menu-item
+            (click)="openRegisterDialog()">
+            <mat-icon>person_add</mat-icon>
+            <span>Register</span>
+          </button>
+          <button mat-menu-item
+            (click)="openLoginDialog()">
+            <mat-icon>login</mat-icon>
+            <span>Login</span>
+          </button>
+        </div>
+        <div *ngIf="(isAuthenticated$ | async)">
+          <button mat-menu-item
+            (click)="logOut()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>Log out</span>
+          </button>
+        </div>
       </mat-menu>
       <button mat-icon-button
         aria-label="Toggle dark mode"

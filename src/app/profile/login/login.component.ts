@@ -38,13 +38,13 @@ export class LoginComponent implements OnInit {
     private themingService: ThemingService,
     private fb: FormBuilder,
     private authService: AuthService,
-   public dialogRef: MatDialogRef<LoginComponent>) {
+    public dialogRef: MatDialogRef<LoginComponent>) {
     this.user = {
-      email: '',
+      username: '',
       password: '',
     }
     this.form = this.fb.group({
-      email: [this.user?.email, [Validators.required]],
+      username: [this.user?.username, [Validators.required]],
       password: [this.user?.password, [Validators.required]]
     })
   }
@@ -57,15 +57,11 @@ export class LoginComponent implements OnInit {
   }
   submit() {
     this.authService.loginUser(this.form.value as ILogin)
-      .subscribe(response => {
-        let user = response as IUser;
-        if (!user) {
-          let reply = response as IApiResponse;
-          console.error(reply?.message);
-        } else {
-          this.authService.currentUser = user;
+      .subscribe({
+        next: response => {
           this.dialogRef.close();
-        }
+        },
+        error: err => this.snackBar.open(`${err}, in error`, 'OK')
       })
   }
 }

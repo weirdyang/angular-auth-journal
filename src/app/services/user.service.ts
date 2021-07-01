@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Profile } from '../types/user';
@@ -20,7 +20,7 @@ export class UserService {
       errorMessage = `Backend returned code ${err.status}: ${err.body?.error}`;
     }
     // this.errorService.setErrorMessage("Unable to fetch records.")
-    return EMPTY;
+    return throwError(errorMessage);
   }
   getProfile(username: string) {
     return this.http.get<Profile>(`${this.apiUrl}/users/profile/${username}`)

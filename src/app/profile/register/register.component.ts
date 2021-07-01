@@ -82,13 +82,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
   save() {
     console.log(this.form.value as RegisterUser);
     this.authService.registerUser(this.form.value as RegisterUser)
-      .subscribe(response => {
-        if (response?.hasError) {
-          console.error(response?.message)
-          this.snackBar.open(response.message, 'OK');
-        } else {
-          this.dialogRef.close(response.message);
-        }
+      .subscribe({
+        next: result => {
+          this.snackBar.open(result.message, 'OK');
+          this.dialogRef.close();
+        },
+        error: err => this.snackBar.open(err, 'OK')
       })
 
   }

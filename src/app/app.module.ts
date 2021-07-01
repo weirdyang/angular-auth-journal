@@ -12,7 +12,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProfileModule } from './profile/profile.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClientXsrfModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { DefaultInterceptor } from './interceptors/default.interceptor';
 
 @NgModule({
   declarations: [
@@ -31,8 +32,16 @@ import { HttpClientModule } from '@angular/common/http';
     MatListModule,
     ProfileModule,
     HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN'
+    })
   ],
-  providers: [],
+  providers: [
+    [
+      { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true }
+    ]
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RegisterComponent } from '../profile/register/register.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoginComponent } from '../profile/login/login.component';
+import { AuthService } from '../services/auth.service';
 interface MenuItem {
   name: string;
   path: string;
@@ -18,7 +19,7 @@ interface MenuItem {
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss']
 })
-export class NavBarComponent implements OnDestroy {
+export class NavBarComponent implements OnDestroy, OnInit {
   menuItems: Array<MenuItem> = [{
     name: 'leaf', path: 'leaf', icon: 'leaf'
   }]
@@ -27,13 +28,18 @@ export class NavBarComponent implements OnDestroy {
       map(result => result.matches),
       shareReplay()
     );
+
+  isAuthenticated$ = this.authService.isAuthenticated$
   @Input()
   darkMode!: boolean | null;
 
   constructor(private breakpointObserver: BreakpointObserver,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
-    private themeService: ThemingService) { }
+    private authService: AuthService) { }
+  ngOnInit(): void {
+    this.authService.getCsrfToken().subscribe();
+  }
 
   @Output()
   toggleDarkEvent = new EventEmitter<boolean>();
@@ -55,19 +61,22 @@ export class NavBarComponent implements OnDestroy {
   }
 
   openLoginDialog() {
-      const dialogRef = this.dialog.open(LoginComponent, {
-        width: '450px',
-        disableClose: true
-      })
-      this.dialogSubscription = dialogRef
-        .afterClosed()
-        .subscribe(result => {
-          if (result) {
-            this.snackBar.open(result, 'OK');
-          }
-        });
-    }
+    const dialogRef = this.dialog.open(LoginComponent, {
+      width: '450px',
+      disableClose: true
+    })
+    this.dialogSubscription = dialogRef
+      .afterClosed()
+      .subscribe(result => {
+        if (result) {
+          this.snackBar.open(result, 'OK');
+        }
+      });
+  }
 
+  logOut() {
+    this.authService.logOut().subscribe();
+  }
   toggleDarkMode() {
     this.toggleDarkEvent.emit(!this.darkMode);
   }

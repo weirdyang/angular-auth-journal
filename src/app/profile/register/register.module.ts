@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { RegisterRoutingModule } from './register-routing.module';
 import { RegisterComponent } from './register.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +17,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   ],
   imports: [
     CommonModule,
-    RegisterRoutingModule,
     MatDialogModule,
     MatIconModule,
     MatButtonModule,
@@ -33,7 +31,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   exports: [
     RegisterComponent,
     CommonModule,
-    RegisterRoutingModule,
     MatDialogModule,
     MatIconModule,
     MatButtonModule,
