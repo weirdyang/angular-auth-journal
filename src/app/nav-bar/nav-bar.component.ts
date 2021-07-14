@@ -41,10 +41,9 @@ export class NavBarComponent implements OnDestroy, OnInit {
     public dialog: MatDialog,
     private authService: AuthService,
     private router: Router) { }
+
+  crsfToken$ = this.authService.getCsrfToken();
   ngOnInit(): void {
-    this.authService
-      .getCsrfToken()
-      .subscribe();
   }
 
   @Output()

@@ -1,77 +1,79 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer
-    class="sidenav"
-    fixedInViewport
-    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
-    <mat-nav-list>
-      <a matLine
-        *ngFor="let item of menuItems"
-        mat-list-item
-        [routerLink]="'/'+item.path">
-        <mat-icon svgIcon="{{item.icon}}"> </mat-icon>
-        {{item.name | titlecase}}
-      </a>
-    </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button type="button"
-        aria-label="Toggle sidenav"
-        mat-icon-button
-        (click)="drawer.toggle()"
-        *ngIf="isHandset$ | async">
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-      </button>
-      <span>dark-mode</span>
-      <span class="spacer"></span>
-      <button mat-icon-button
-        [matMenuTriggerFor]="menu"
-        matToolTip="Manage account"
-        [color]="
-        darkMode
-        ? 'accent'
-        : 'primary'"
-        aria-label="Example icon-button with a menu">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu">
-        <div *ngIf="!isAuthenticated">
-          <button mat-menu-item
-            (click)="openRegisterDialog()">
-            <mat-icon>person_add</mat-icon>
-            <span>Register</span>
-          </button>
-          <button mat-menu-item
-            (click)="openLoginDialog()">
-            <mat-icon>login</mat-icon>
-            <span>Login</span>
-          </button>
-        </div>
-        <div *ngIf="isAuthenticated">
-          <button mat-menu-item
-            (click)="logOut()">
-            <mat-icon>exit_to_app</mat-icon>
-            <span>Log out</span>
-          </button>
-        </div>
-      </mat-menu>
-      <button mat-icon-button
-        aria-label="Toggle dark mode"
-        matTooltip="Toggle dark mode"
-        [color]="
-        darkMode
-        ? 'accent'
-        : 'primary'"
-        (click)="
-        toggleDarkMode()">
-        <mat-icon role="img">
-          {{ darkMode ? 'nightlight_round': ' light_mode' }}
-        </mat-icon>
-      </button>
-    </mat-toolbar>
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<ng-container *ngIf="(crsfToken$ | async)">
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer
+      class="sidenav"
+      fixedInViewport
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="(isHandset$ | async) === false">
+      <mat-toolbar>Menu</mat-toolbar>
+      <mat-nav-list>
+        <a matLine
+          *ngFor="let item of menuItems"
+          mat-list-item
+          [routerLink]="'/'+item.path">
+          <mat-icon svgIcon="{{item.icon}}"> </mat-icon>
+          {{item.name | titlecase}}
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <mat-toolbar color="primary">
+        <button type="button"
+          aria-label="Toggle sidenav"
+          mat-icon-button
+          (click)="drawer.toggle()"
+          *ngIf="isHandset$ | async">
+          <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+        </button>
+        <span>dark-mode</span>
+        <span class="spacer"></span>
+        <button mat-icon-button
+          [matMenuTriggerFor]="menu"
+          matToolTip="Manage account"
+          [color]="
+          darkMode
+          ? 'accent'
+          : 'primary'"
+          aria-label="Example icon-button with a menu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <div *ngIf="!isAuthenticated">
+            <button mat-menu-item
+              (click)="openRegisterDialog()">
+              <mat-icon>person_add</mat-icon>
+              <span>Register</span>
+            </button>
+            <button mat-menu-item
+              (click)="openLoginDialog()">
+              <mat-icon>login</mat-icon>
+              <span>Login</span>
+            </button>
+          </div>
+          <div *ngIf="isAuthenticated">
+            <button mat-menu-item
+              (click)="logOut()">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Log out</span>
+            </button>
+          </div>
+        </mat-menu>
+        <button mat-icon-button
+          aria-label="Toggle dark mode"
+          matTooltip="Toggle dark mode"
+          [color]="
+          darkMode
+          ? 'accent'
+          : 'primary'"
+          (click)="
+          toggleDarkMode()">
+          <mat-icon role="img">
+            {{ darkMode ? 'nightlight_round': ' light_mode' }}
+          </mat-icon>
+        </button>
+      </mat-toolbar>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</ng-container>

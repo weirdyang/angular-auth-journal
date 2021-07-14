@@ -37,6 +37,9 @@ export class WriteJournalComponent implements OnInit {
         }
       );
   }
+  preview() {
+
+  }
   md: any = marked.setOptions({});
   ngOnInit(): void {
     this.journal = {
