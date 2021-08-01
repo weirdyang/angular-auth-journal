@@ -30,9 +30,9 @@
         class="form-item">
         <mat-label>Product Description</mat-label>
         <textarea matInput
+            [rows]="8"
             formControlName="description"
             placeholder="Eg. Super Special Fishcake is 100% made from wild caught salmon"></textarea>
-
     </mat-form-field>
     <mat-error *ngIf="!form.get('description')?.valid">
         {{ "Please enter a valid description"}}
