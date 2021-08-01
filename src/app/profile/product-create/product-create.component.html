@@ -1,1 +1,75 @@
-<p>product-create works!</p>
+<form [formGroup]="form"
+    (ngSubmit)="submitForm()"
+    novalidate>
+    <section class="header">
+        <h2>Create New Product</h2>
+        <div class="button-wrapper">
+            <button mat-flat-button
+                [disabled]="!form.valid"
+                color="primary">Submit</button>
+        </div>
+    </section>
+    <mat-form-field appearance="fill"
+        class="form-item">
+        <mat-label>Product Name</mat-label>
+        <input matInput
+            placeholder="Eg. Super Special Fishcake"
+            formControlName="name">
+
+    </mat-form-field>
+    <mat-error *ngIf="!form.get('name')?.valid">
+        {{ "Please enter a valid name"}}
+    </mat-error>
+    {{ nameError }}
+    <mat-error *ngIf="nameError">
+        {{ nameError }}
+    </mat-error>
+    <mat-form-field appearance="fill"
+        class="form-item">
+        <mat-label>Product Description</mat-label>
+        <textarea matInput
+            formControlName="description"
+            placeholder="Eg. Super Special Fishcake is 100% made from wild caught salmon"></textarea>
+
+    </mat-form-field>
+    <mat-error *ngIf="!form.get('description')?.valid">
+        {{ "Please enter a valid description"}}
+    </mat-error>
+    <mat-error *ngIf="descriptionError">
+        {{ descriptionError }}
+    </mat-error>
+    <section class="form-item">
+        <article class="file-input">
+            <input type="file"
+                class="file-input"
+                (change)="onFileSelected($event)"
+                [accept]="accepted"
+                #fileUpload>
+
+            <div class="file-upload">
+                <div *ngIf="imagePreview == ''">
+                    {{fileName || "No file uploaded yet."}}
+                </div>
+                <div class="preview-image"
+                    *ngIf="imagePreview !== ''
+                && imagePreview && form.get('file')?.valid">
+
+                    <img [src]="imagePreview"
+                        [alt]="fileName">
+                </div>
+                <div>
+                    <button mat-mini-fab
+                        color="primary"
+                        class="upload-btn"
+                        type="button"
+                        (click)="fileUpload.click()">
+                        <mat-icon>attach_file</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </article>
+        <mat-error *ngIf="fileError">
+            {{ fileError }}
+        </mat-error>
+    </section>
+</form>

@@ -12,7 +12,8 @@
           *ngFor="let item of menuItems"
           mat-list-item
           [routerLink]="'/'+item.path">
-          <mat-icon svgIcon="{{item.icon}}"> </mat-icon>
+          <mat-icon svgIcon="{{item.icon}}"
+            class="filter-green"> </mat-icon>
           {{item.name | titlecase}}
         </a>
       </mat-nav-list>
