@@ -9,6 +9,9 @@
                 color="primary">Submit</button>
         </div>
     </section>
+    <mat-error *ngIf="errorMessage">
+        {{ errorMessage }}
+    </mat-error>
     <mat-form-field appearance="fill"
         class="form-item">
         <mat-label>Product Name</mat-label>
@@ -20,7 +23,6 @@
     <mat-error *ngIf="!form.get('name')?.valid">
         {{ "Please enter a valid name"}}
     </mat-error>
-    {{ nameError }}
     <mat-error *ngIf="nameError">
         {{ nameError }}
     </mat-error>

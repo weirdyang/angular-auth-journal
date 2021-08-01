@@ -60,7 +60,7 @@ export class ProductCreateComponent implements OnInit {
     if (error.message) {
       this.errorMessage = error.message;
     }
-    if (error.additionalInfo.length) {
+    if (error.additionalInfo && error.additionalInfo.length) {
       console.table(error.additionalInfo[0]);
       for (const item of error.additionalInfo) {
         console.log(item)
