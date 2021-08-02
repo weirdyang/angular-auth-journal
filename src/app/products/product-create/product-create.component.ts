@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ErrorMessage, HttpError } from 'src/app/types/http-error';
 
 @Component({
@@ -9,7 +9,13 @@ import { ErrorMessage, HttpError } from 'src/app/types/http-error';
   styleUrls: ['./product-create.component.scss']
 })
 export class ProductCreateComponent implements OnInit {
-  fileName = '';
+  private _fileName: string = '';
+  set fileName(value) {
+    this._fileName = value;
+  }
+  get fileName() {
+    return this._fileName;
+  }
   validTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 
   accepted = this.validTypes.join();
@@ -17,20 +23,29 @@ export class ProductCreateComponent implements OnInit {
 
   form!: FormGroup;
   errorMessage: string = '';
+  @ViewChild('createForm', { static: false })
+  myForm!: NgForm;
 
-  constructor(private http: HttpClient, private fb: FormBuilder) { }
+  constructor(
+    private http: HttpClient,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef) {
+    this.form = this.fb.group({
+      name: [null, [Validators.required, Validators.minLength(8)]],
+      description: [null, [Validators.required, Validators.minLength(8)]],
+      file: [null, [Validators.required]],
+      productType: [null, [Validators.required, Validators.minLength(8)]],
+      fileName: [null]
+    })
+  }
 
   nameError = '';
   descriptionError = '';
   fileError = '';
+  productTypeError = '';
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      name: ['My new product', [Validators.required]],
-      description: ['Amazingly delicious', [Validators.required]],
-      file: [null, [Validators.required]]
 
-    })
   }
   onFileSelected(event: Event) {
 
@@ -43,7 +58,8 @@ export class ProductCreateComponent implements OnInit {
       reader.onload = () => {
         if (reader.result) {
           this.form.patchValue({
-            file: file
+            file: file,
+            fileName: file.name,
           });
           console.log(this.form.value);
           this.imagePreview = reader.result;
@@ -51,14 +67,15 @@ export class ProductCreateComponent implements OnInit {
         }
       }
       reader.readAsDataURL(file);
-      this.fileName = file.name;
-
     }
   }
   processError(error: HttpError) {
     console.log(error);
     if (error.message) {
       this.errorMessage = error.message;
+    }
+    if (error.additionalInfo) {
+      console.log(error.additionalInfo);
     }
     if (error.additionalInfo && error.additionalInfo.length) {
       console.table(error.additionalInfo[0]);
@@ -77,6 +94,9 @@ export class ProductCreateComponent implements OnInit {
           case 'description':
             this.descriptionError = message.error;
             break;
+          case 'productType':
+            this.productTypeError = message.error;
+            break;
         }
       }
     }
@@ -84,16 +104,20 @@ export class ProductCreateComponent implements OnInit {
   submitForm() {
     console.log(this.form);
     const formData: any = new FormData();
-    const { name, description, file } = this.form.value;
+    const { name, description, file, productType } = this.form.value;
     formData.append("name", name);
     formData.append("description", description);
     formData.append("file", file);
+    formData.append("productType", productType)
     console.log(formData);
     this.http.post('api/products/create', formData).subscribe(
       {
         next: () => console.log('done'),
         error: (err) => this.processError(err.error),
-        complete: () => console.log('complete')
+        complete: () => {
+          this.form.reset();
+          this.myForm.resetForm();
+        }
       }
     );
   }

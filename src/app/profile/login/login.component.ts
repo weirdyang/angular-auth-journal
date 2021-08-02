@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
         next: response => {
           this.dialogRef.close();
         },
-        error: err => this.snackBar.open(`${err}, in error`, 'OK')
+        error: err => this.snackBar.open(`${err}`, 'OK')
       })
   }
 }
