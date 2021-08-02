@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { createPasswordStrengthValidator } from 'src/app/profile/register/password.validator';
 import { ErrorMessage, HttpError } from 'src/app/types/http-error';
+import { createExtensionValidator } from '../helpers/extension.validator';
+import { isValidImageExtension } from '../helpers/image-helper';
 
 @Component({
   selector: 'dm-product-create',
   templateUrl: './product-create.component.html',
   styleUrls: ['./product-create.component.scss']
 })
-export class ProductCreateComponent implements OnInit {
+export class ProductCreateComponent {
   private _fileName: string = '';
   set fileName(value) {
     this._fileName = value;
@@ -35,7 +38,7 @@ export class ProductCreateComponent implements OnInit {
       description: [null, [Validators.required, Validators.minLength(8)]],
       file: [null, [Validators.required]],
       productType: [null, [Validators.required, Validators.minLength(8)]],
-      fileName: [null]
+      fileName: [null, [Validators.required, createExtensionValidator()]]
     })
   }
 
@@ -44,9 +47,6 @@ export class ProductCreateComponent implements OnInit {
   fileError = '';
   productTypeError = '';
 
-  ngOnInit(): void {
-
-  }
   onFileSelected(event: Event) {
 
     const target = event.target as HTMLInputElement;
@@ -61,9 +61,10 @@ export class ProductCreateComponent implements OnInit {
             file: file,
             fileName: file.name,
           });
-          console.log(this.form.value);
-          this.imagePreview = reader.result;
-          this.form.get('file')?.updateValueAndValidity()
+          if (isValidImageExtension(file.name)) {
+            this.imagePreview = reader.result;
+            this.form.get('file')?.updateValueAndValidity()
+          }
         }
       }
       reader.readAsDataURL(file);

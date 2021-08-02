@@ -25,6 +25,9 @@
         <mat-error *ngIf="form.get('name')?.invalid && !form.get('name')?.hasError('required') || nameError">
             {{ nameError || "Product name must be at least 8 characters"}}
         </mat-error>
+        <mat-error *ngIf="form.get('name')?.hasError('required')">
+            This is required.
+        </mat-error>
     </mat-form-field>
     <mat-form-field appearance="fill"
         class="form-item">
@@ -34,6 +37,9 @@
             formControlName="productType">
         <mat-error *ngIf="(form.get('productType')?.invalid && !form.get('productType')?.hasError('required'))">
             {{ productTypeError || "Product type must be at least 8 characters"}}
+        </mat-error>
+        <mat-error *ngIf="form.get('productType')?.hasError('required')">
+            This is required.
         </mat-error>
     </mat-form-field>
     <mat-form-field appearance="fill"
@@ -46,6 +52,9 @@
         <mat-error *ngIf="form.get('description')?.invalid && !form.get('description')?.hasError('required')">
             {{ descriptionError || "Product description must be at least 8 characters"}}
         </mat-error>
+        <mat-error *ngIf="form.get('description')?.hasError('required')">
+            This is required.
+        </mat-error>
     </mat-form-field>
     <mat-form-field appearance="fill"
         class="form-item">
@@ -55,9 +64,7 @@
             formControlName="fileName"
             (click)="fileUpload.click()"
             placeholder="
-            No
-            file
-            selected">
+            No file selected">
         <button mat-mini-fab
             matSuffix
             color="primary"
@@ -66,11 +73,18 @@
             (click)="fileUpload.click()">
             <mat-icon>attach_file</mat-icon>
         </button>
+        <mat-error *ngIf="form.get('fileName')?.errors?.invalidExtension">
+            Only png and jpg format allowed
+        </mat-error>
+        <mat-error *ngIf="form.get('fileName')?.hasError('required')">
+            This is required.
+        </mat-error>
     </mat-form-field>
     <section class="form-item">
         <article class="file-input">
             <input type="file"
                 class="file-input"
+                formControlName="productType"
                 (change)="onFileSelected($event)"
                 [accept]="accepted"
                 #fileUpload>
