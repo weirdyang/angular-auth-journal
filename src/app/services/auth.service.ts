@@ -42,7 +42,6 @@ export class AuthService {
   getUser = (): IUser | null => {
     const user = window.localStorage.getItem(this.USER_KEY);
     if (user) {
-      console.log(JSON.parse(user))
       return JSON.parse(user).user;
     }
     return null;

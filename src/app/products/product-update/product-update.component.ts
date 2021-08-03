@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, NgForm, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, NgForm, FormBuilder, Validators, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, debounceTime, tap, takeUntil, switchMap, catchError } from 'rxjs/operators';
@@ -9,9 +9,9 @@ import { IHttpError, IErrorMessage } from 'src/app/types/http-error';
 import { IProduct, IProductEdit } from 'src/app/types/product';
 import { IUser } from 'src/app/types/user';
 import { environment } from 'src/environments/environment';
-import { validTypes, fileTypeValidator, fileSizeValidator, checkFileValidator } from '../helpers/file.validator';
+import { validTypes, fileTypeValidator, fileSizeValidator, checkFileValidator, conditionalValidator } from '../helpers/file.validator';
 import { isValidImageExtension } from '../helpers/image-helper';
-
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'dm-product-update',
   templateUrl: './product-update.component.html',
@@ -45,18 +45,25 @@ export class ProductUpdateComponent implements OnInit {
     private productService: ProductsService,
     private authService: AuthService,
     private router: Router,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar) {
+    this.user = this.authService.getUser() as IUser;
   }
   product!: IProductEdit;
   user!: IUser;
   apiUrl = environment.productApi;
+  conditionalFileCheck = conditionalValidator(() => this.form.get('fileName')?.value,
+    Validators.compose(
+      [Validators.required, fileTypeValidator, fileSizeValidator],
+    ) as ValidatorFn);
+
   private constructFormGroup(product: IProduct) {
     this.form = this.fb.group({
       name: [product.name,
       [Validators.required, Validators.minLength(8)]],
       description: [product.description, [Validators.required, Validators.minLength(8)]],
       file: ['',
-        [fileTypeValidator, fileSizeValidator]],
+        [this.conditionalFileCheck]],
       productType: [product.productType,
       [Validators.required, Validators.minLength(8)]],
       fileName: ['',
@@ -64,11 +71,14 @@ export class ProductUpdateComponent implements OnInit {
     });
 
     this.form.updateValueAndValidity();
+
   }
 
   ngOnInit(): void {
-    this.user = this.authService.getUser() as IUser;
-    this.route.data.subscribe(
+
+    this.route.data.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(
       ({ product }) => {
         this.product = product;
         console.log(this.product.user, this.user.id);
@@ -100,19 +110,21 @@ export class ProductUpdateComponent implements OnInit {
       reader.onload = () => {
         if (reader.result) {
           this.form.patchValue({
+            fileName: file.name,
             file: file,
           });
           if (isValidImageExtension(file.name)) {
             this.imagePreview = reader.result;
             this.form.get('file')?.updateValueAndValidity()
+            this.form.get('fileName')?.updateValueAndValidity()
           }
         }
       }
-      this.form.patchValue({
-        fileName: file.name,
-      });
+
       if (isValidImageExtension(file.name)) {
         reader.readAsDataURL(file);
+      } else {
+        this.snackBar.open('Only .png and .jpg files are allowed', 'OK');
       }
     }
   }
@@ -158,10 +170,21 @@ export class ProductUpdateComponent implements OnInit {
     this._isSubmitting = value;
   }
   protected readonly destroy$ = new Subject();
-  private submitSubject = new BehaviorSubject<FormData | null>(null);
-  submit$ = this.submitSubject.asObservable()
+  private formSubmitSubject = new BehaviorSubject<FormData | null>(null);
+  formSubmit$ = this.formSubmitSubject.asObservable()
     .pipe(
       map(value => value as FormData),
+      filter(value => value !== null),
+      debounceTime(500),
+      tap(_ => console.log('subject')),
+      tap(_ => this.isSubmitting = true),
+      takeUntil(this.destroy$)
+    )
+
+  private productSubmitSubject = new BehaviorSubject<IProduct | null>(null);
+  productSubmit$ = this.productSubmitSubject.asObservable()
+    .pipe(
+      map(value => value as IProduct),
       filter(value => value !== null),
       debounceTime(500),
       tap(_ => console.log('subject')),
@@ -176,7 +199,7 @@ export class ProductUpdateComponent implements OnInit {
     this.errorMessage = '';
     this.nameError = '';
   }
-  private subscription = this.submit$
+  private formSubscription = this.formSubmit$
     .pipe(
       tap(data => console.log(data, 'subscription')),
       switchMap(formData =>
@@ -184,9 +207,22 @@ export class ProductUpdateComponent implements OnInit {
       catchError(err => this.processError(err.error)),
     ).subscribe((res) => this.resetForm(res));
 
+  private postSubscription = this.productSubmit$
+    .pipe(
+      tap(data => console.log(data, 'subscription')),
+      switchMap(formData =>
+        this.postUpdatedProduct(formData)),
+      catchError(err => this.processError(err.error)),
+    ).subscribe((res) => this.resetForm(res));
 
+  private postUpdatedProduct(prod: IProduct) {
+    return this.productService.updateProductDetails(prod, this.product.id)
+      .pipe(
+        catchError(err => this.processError(err.error))
+      );
+  }
   private postFormData(formData: FormData) {
-    return this.productService.createProduct(formData)
+    return this.productService.updateProduct(formData, this.product.id)
       .pipe(
         catchError(err => this.processError(err.error))
       );
@@ -201,20 +237,33 @@ export class ProductUpdateComponent implements OnInit {
 
     formData.append("name", name);
     formData.append("description", description);
-    formData.append("file", file);
     formData.append("productType", productType);
+
+    if (file) {
+      formData.append('file', file);
+    }
     return formData;
   }
   submitForm() {
-    console.log('test');
-    const formData: FormData = this.constructFormData();
-    console.log(formData);
-    this.submitSubject.next(formData);
-    console.log('after');
+    const { file } = this.form.value;
+    if (file) {
+      console.log(this.form.get('file'));
+      console.log('image updated');
+      const formData: FormData = this.constructFormData();
+      this.formSubmitSubject.next(formData);
+    } else {
+      const updatedProduct = {
+        ...this.form.value
+      }
+      this.productSubmitSubject.next(updatedProduct as IProduct);
+    }
+
+
   }
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscription.unsubscribe();
+    this.formSubscription.unsubscribe();
+    this.postSubscription.unsubscribe();
   }
 }

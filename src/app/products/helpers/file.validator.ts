@@ -33,3 +33,16 @@ export const checkFileValidator: ValidatorFn = (control: AbstractControl): Valid
         ? { invalidFile: true }
         : null;
 }
+
+export const conditionalValidator = function (predicate: () => true, validator: ValidatorFn) {
+    return (formControl: AbstractControl) => {
+        if (!formControl.parent) {
+            return null;
+        }
+        if (predicate()) {
+            console.log(formControl.parent, 'parent')
+            return validator(formControl);
+        }
+        return null;
+    };
+}
