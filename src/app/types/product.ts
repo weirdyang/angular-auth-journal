@@ -3,3 +3,6 @@ export interface IProduct {
     description: string,
     productType: string
 }
+export interface IProductEdit extends IProduct {
+    user: string;
+}

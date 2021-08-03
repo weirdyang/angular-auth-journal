@@ -68,17 +68,17 @@ export class ProductCreateComponent implements OnDestroy {
       reader.onload = () => {
         if (reader.result) {
           this.form.patchValue({
+            fileName: file.name,
             file: file,
           });
           if (isValidImageExtension(file.name)) {
             this.imagePreview = reader.result;
             this.form.get('file')?.updateValueAndValidity()
+            this.form.get('fileName')?.updateValueAndValidity()
           }
         }
       }
-      this.form.patchValue({
-        fileName: file.name,
-      });
+
       if (isValidImageExtension(file.name)) {
         reader.readAsDataURL(file);
       }

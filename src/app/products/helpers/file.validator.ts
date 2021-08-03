@@ -21,12 +21,14 @@ export const fileTypeValidator: ValidatorFn = (control: AbstractControl): Valida
         console.log(file.type);
         validType = validTypes.some(el => el === file.type);
     }
+    console.log(validType, 'validType');
     return validType ? null : { invalidType: true }
 }
 
 export const checkFileValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const parent = control.parent as FormGroup;
     if (!parent) return null;
+    console.log(parent?.get('file')?.errors, 'errors');
     return parent?.get('file')?.errors
         ? { invalidFile: true }
         : null;

@@ -82,12 +82,19 @@
         <mat-error *ngIf="form.get('fileName')?.hasError('required')">
             This is required.
         </mat-error>
+
     </mat-form-field>
+    <pre>
+        {{form.get('fileName')?.hasError('required') }}
+        {{form.get('fileName')?.hasError('invalidFile') }}
+        {{form.get('file')?.hasError('required') }}
+        {{form.get('file')?.hasError('invalidFileSize') }}
+        {{form.get('file')?.hasError('invalidType') }}
+    </pre>
     <section class="form-item">
         <article class="file-input">
             <input type="file"
                 class="file-input"
-                formControlName="productType"
                 (change)="onFileSelected($event)"
                 [accept]="accepted"
                 #fileUpload>
