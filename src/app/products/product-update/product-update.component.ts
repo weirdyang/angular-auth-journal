@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 import { validTypes, fileTypeValidator, fileSizeValidator, checkFileValidator, conditionalValidator } from '../helpers/file.validator';
 import { isValidImageExtension } from '../helpers/image-helper';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { constructFormData } from '../helpers/product.processor';
 @Component({
   selector: 'dm-product-update',
   templateUrl: './product-update.component.html',
@@ -28,11 +29,7 @@ export class ProductUpdateComponent implements OnInit {
   get fileName() {
     return this._fileName;
   }
-
-
-
   accepted = validTypes.join();
-
   imagePreview: string | ArrayBuffer = '';
 
   form!: FormGroup;
@@ -73,7 +70,9 @@ export class ProductUpdateComponent implements OnInit {
     this.form.updateValueAndValidity();
 
   }
-
+  cancel() {
+    this.router.navigateByUrl('/');
+  }
   ngOnInit(): void {
 
     this.route.data.pipe(
@@ -108,17 +107,7 @@ export class ProductUpdateComponent implements OnInit {
       const file = files[0];
 
       reader.onload = () => {
-        if (reader.result) {
-          this.form.patchValue({
-            fileName: file.name,
-            file: file,
-          });
-          if (isValidImageExtension(file.name)) {
-            this.imagePreview = reader.result;
-            this.form.get('file')?.updateValueAndValidity()
-            this.form.get('fileName')?.updateValueAndValidity()
-          }
-        }
+        this.processFile(reader, file);
       }
 
       if (isValidImageExtension(file.name)) {
@@ -126,6 +115,39 @@ export class ProductUpdateComponent implements OnInit {
       } else {
         this.snackBar.open('Only .png and .jpg files are allowed', 'OK');
       }
+    }
+  }
+  private processFile(reader: FileReader, file: File) {
+    if (reader.result) {
+      this.form.patchValue({
+        fileName: file.name,
+        file: file,
+      });
+      if (isValidImageExtension(file.name)) {
+        this.imagePreview = reader.result;
+        this.form.get('file')?.updateValueAndValidity();
+        this.form.get('fileName')?.updateValueAndValidity();
+      }
+    }
+  }
+
+  private processErrorMessage(item: IErrorMessage) {
+    const message = item as IErrorMessage;
+    switch (message.name) {
+      default:
+        break;
+      case 'name':
+        this.nameError = message.error;
+        break;
+      case 'file':
+        this.fileError = message.error;
+        break;
+      case 'description':
+        this.descriptionError = message.error;
+        break;
+      case 'productType':
+        this.productTypeError = message.error;
+        break;
     }
   }
   processError(error: IHttpError) {
@@ -139,30 +161,14 @@ export class ProductUpdateComponent implements OnInit {
     if (error.additionalInfo && error.additionalInfo.length) {
       console.table(error.additionalInfo[0]);
       for (const item of error.additionalInfo) {
-        console.log(item)
-        const message = item as IErrorMessage;
-        switch (message.name) {
-          default:
-            break;
-          case 'name':
-            this.nameError = message.error;
-            break;
-          case 'file':
-            this.fileError = message.error;
-            break;
-          case 'description':
-            this.descriptionError = message.error;
-            break;
-          case 'productType':
-            this.productTypeError = message.error;
-            break;
-        }
+        this.processErrorMessage(item);
       }
     }
     this.isSubmitting = false;
     return EMPTY;
   }
   private _isSubmitting = false;
+
   get isSubmitting() {
     return this._isSubmitting
   }
@@ -176,7 +182,6 @@ export class ProductUpdateComponent implements OnInit {
       map(value => value as FormData),
       filter(value => value !== null),
       debounceTime(500),
-      tap(_ => console.log('subject')),
       tap(_ => this.isSubmitting = true),
       share(),
       takeUntil(this.destroy$)
@@ -188,15 +193,11 @@ export class ProductUpdateComponent implements OnInit {
       map(value => value as IProduct),
       filter(value => value !== null),
       debounceTime(500),
-      tap(_ => console.log('subject')),
       tap(_ => this.isSubmitting = true),
       share(),
       takeUntil(this.destroy$)
     )
   private resetForm(res: any) {
-    // console.log(res);
-    // this.form.reset();
-    // this.myForm.resetForm();
     this.isSubmitting = false
     this.errorMessage = '';
     this.nameError = '';
@@ -230,29 +231,12 @@ export class ProductUpdateComponent implements OnInit {
       );
   };
 
-  private constructFormData() {
-    const formData: FormData = new FormData();
 
-    const { name, description, file, productType } = this.form.value;
-
-    console.log(name);
-
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("productType", productType);
-
-    if (file) {
-      formData.append('file', file);
-    }
-    return formData;
-  }
   submitForm() {
     this.isSubmitting = true;
     const { file } = this.form.value;
     if (file) {
-      console.log(this.form.get('file'));
-      console.log('image updated');
-      const formData: FormData = this.constructFormData();
+      const formData: FormData = constructFormData(this.form);
       this.formSubmitSubject.next(formData);
     } else {
       const updatedProduct = {

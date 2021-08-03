@@ -1,6 +1,20 @@
 .bd-overlay-dark {
     opacity: 0.5;
 }
+.spacer {
+    flex: 1 1 auto;
+}
+$min-width: 75vw;
+.bm-button-row {
+    width: $min-width;
+    display: flex;
+    align-items: stretch;
+    margin: 1rem 0.25rem;
+    button {
+        margin: 0 0.25rem;
+    }
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -18,7 +32,7 @@ form {
     flex-direction: row;
     justify-content: space-between;
     > * {
-        margin: 1rem 1rem;
+        margin: 0.25rem 1rem;
     }
   }
   .file-input {
