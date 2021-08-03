@@ -8,7 +8,7 @@ import { ThemingService } from 'src/app/services/core/theming.service';
 import { UserService } from 'src/app/services/user.service';
 import { IApiResponse, ILogin, IUser } from 'src/app/types/user';
 import { RegisterComponent } from '../register/register.component';
-import { ErrorMessage } from 'src/app/types/http-error';
+import { IErrorMessage } from 'src/app/types/http-error';
 @Component({
   selector: 'dm-login',
   templateUrl: './login.component.html',
@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
             errorMessage += error.message;
           }
           if (error.additionalInfo && error.additionalInfo.length) {
-            error.additionalInfo.forEach((element: ErrorMessage) => {
+            error.additionalInfo.forEach((element: IErrorMessage) => {
               errorMessage += `\n${element.error}`;
             });
           }

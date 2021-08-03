@@ -3,10 +3,10 @@ import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { BehaviorSubject, EMPTY, Subject } from 'rxjs';
 import { catchError, debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 
-import { ErrorMessage, HttpError } from 'src/app/types/http-error';
+import { IErrorMessage, IHttpError } from 'src/app/types/http-error';
 
 import { isValidImageExtension } from '../helpers/image-helper';
-import { ProductsService } from '../services/products.service';
+import { ProductsService } from 'src/app/services/products.service';
 import { validTypes, fileSizeValidator, fileTypeValidator, checkFileValidator } from '../helpers/file.validator';
 @Component({
   selector: 'dm-product-create',
@@ -80,7 +80,7 @@ export class ProductCreateComponent implements OnDestroy {
       reader.readAsDataURL(file);
     }
   }
-  processError(error: HttpError) {
+  processError(error: IHttpError) {
     console.log(error);
     if (error.message) {
       this.errorMessage = error.message;
@@ -92,7 +92,7 @@ export class ProductCreateComponent implements OnDestroy {
       console.table(error.additionalInfo[0]);
       for (const item of error.additionalInfo) {
         console.log(item)
-        const message = item as ErrorMessage;
+        const message = item as IErrorMessage;
         switch (message.name) {
           default:
             break;

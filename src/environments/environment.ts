@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   userApi: 'api',
   journalApi: 'api',
-  authApi: 'api'
+  authApi: 'api',
+  productApi: 'api'
 };
 
 /*

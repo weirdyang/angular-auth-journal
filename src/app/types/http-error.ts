@@ -1,9 +1,9 @@
-export interface HttpError {
+export interface IHttpError {
     message: string,
-    additionalInfo: ErrorMessage[]
+    additionalInfo: IErrorMessage[]
 }
 
-export interface ErrorMessage {
+export interface IErrorMessage {
     name: string,
     error: string,
 }

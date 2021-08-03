@@ -10,7 +10,7 @@ import { RegisterUser } from 'src/app/types/user';
 import { passwordMatchValidator } from './password-match.validator';
 import { createPasswordStrengthValidator } from './password.validator';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ErrorMessage } from 'src/app/types/http-error';
+import { IErrorMessage } from 'src/app/types/http-error';
 // need to inject select module into root
 //https://github.com/angular/angular/issues/35264
 @Component({
@@ -92,7 +92,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           const { error } = err;
           let errorMessage = '';
           if (error.additionalInfo && error.additionalInfo.length) {
-            error.additionalInfo.forEach((element: ErrorMessage) => {
+            error.additionalInfo.forEach((element: IErrorMessage) => {
               errorMessage += `${element.error}. `;
             });
           }
