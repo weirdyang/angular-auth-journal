@@ -8,6 +8,7 @@ import { IErrorMessage, IHttpError } from 'src/app/types/http-error';
 import { isValidImageExtension } from '../helpers/image-helper';
 import { ProductsService } from 'src/app/services/products.service';
 import { validTypes, fileSizeValidator, fileTypeValidator, checkFileValidator } from '../helpers/file.validator';
+import { Router } from '@angular/router';
 @Component({
   selector: 'dm-product-create',
   templateUrl: './product-create.component.html',
@@ -34,6 +35,7 @@ export class ProductCreateComponent implements OnDestroy {
 
   constructor(
     private productService: ProductsService,
+    private router: Router,
     private fb: FormBuilder) {
     this.form = this.fb.group({
       name: [null,
@@ -48,7 +50,9 @@ export class ProductCreateComponent implements OnDestroy {
         [Validators.required, checkFileValidator]]
     })
   }
-
+  cancel() {
+    this.router.navigateByUrl('/');
+  }
   nameError = '';
   descriptionError = '';
   fileError = '';

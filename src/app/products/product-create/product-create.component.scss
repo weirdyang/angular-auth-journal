@@ -1,3 +1,23 @@
+.bd-overlay-dark {
+    opacity: 0.5;
+}
+.spacer {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+}
+$min-width: 75vw;
+.bm-button-row {
+    width: $min-width;
+    display: flex;
+    align-items: stretch;
+    margin: 1rem 0.25rem;
+    button {
+        margin: 0 0.25rem;
+    }
+}
 form {
     display: flex;
     flex-direction: column;
@@ -5,7 +25,7 @@ form {
     justify-content: center;
     align-items: center;
     .form-item {
-        min-width: 75vw;
+        min-width: $min-width;
         margin: auto;
     }
   }
@@ -14,9 +34,6 @@ form {
       justify-content: space-around;
     flex-direction: row;
     justify-content: space-between;
-    > * {
-        margin: 1rem 1rem;
-    }
   }
   .file-input {
       margin: auto;
@@ -28,10 +45,14 @@ form {
           display: none;
       }
       .file-upload {
-          display: flex;
-          justify-content: space-around;
-          div {
-              margin: 0 1rem;
-          }
-      }
-  }
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        div {
+            margin: 0 1rem;
+        }
+    }
+}
+img {
+    max-width: $min-width;
+}

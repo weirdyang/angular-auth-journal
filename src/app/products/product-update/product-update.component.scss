@@ -46,9 +46,13 @@ form {
       }
       .file-upload {
           display: flex;
-          justify-content: space-around;
+          flex-direction: column;
+          justify-content: center;
           div {
               margin: 0 1rem;
           }
       }
+  }
+  img {
+      max-width: $min-width;
   }

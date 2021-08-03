@@ -1,14 +1,38 @@
 <form [formGroup]="form"
     #createForm="ngForm"
     (ngSubmit)="submitForm()"
+    [ngClass]="{'bd-overlay-dark': isSubmitting}"
     novalidate>
+
     <section class="header">
-        <h2>Create New Product</h2>
-        <div class="button-wrapper">
-            <button mat-flat-button
-                [disabled]="!form.valid || isSubmitting"
-                color="primary">Submit</button>
+        <div *ngIf="isSubmitting; else elseBlock">
+            <h2>Submitting</h2>
         </div>
+        <ng-template #elseBlock>
+            <h2>Add New Product</h2>
+        </ng-template>
+    </section>
+    <section class="bm-button-row">
+        <button mat-raised-button
+            [disabled]="!form.valid || isSubmitting"
+            color="primary">Submit</button>
+        <span class="spacer">
+        </span>
+        <button mat-mini-fab
+            type="reset"
+            [disabled]="isSubmitting"
+            matTooltip="Reset the form"
+            color="accent">
+            <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-mini-fab
+            type="button"
+            color="warn"
+            matTooltip="Cancel and go back to the main page"
+            [disabled]="isSubmitting"
+            (click)="cancel()">
+            <mat-icon>cancel</mat-icon>
+        </button>
     </section>
     <mat-error *ngIf="errorMessage">
         {{ errorMessage | titlecase}}

@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductCreateRoutingModule } from './product-create-routing.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { ProductCreateRoutingModule } from './product-create-routing.module';
     MatInputModule,
     MatSnackBarModule,
     ProductCreateRoutingModule,
+    MatTooltipModule
   ],
   exports: [
     ProductCreateComponent,
