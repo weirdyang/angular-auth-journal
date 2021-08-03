@@ -5,4 +5,5 @@ export interface IProduct {
 }
 export interface IProductEdit extends IProduct {
     user: string;
+    id: string;
 }

@@ -6,7 +6,9 @@ import { IProduct } from 'src/app/types/product';
 import { catchError } from 'rxjs/operators';
 import { ProductsService } from 'src/app/services/products.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ProductResolver implements Resolve<IProduct> {
     constructor(
         private productService: ProductsService,

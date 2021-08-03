@@ -1,11 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, NgForm, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, debounceTime, tap, takeUntil, switchMap, catchError } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
 import { ProductsService } from 'src/app/services/products.service';
 import { IHttpError, IErrorMessage } from 'src/app/types/http-error';
-import { IProduct } from 'src/app/types/product';
+import { IProduct, IProductEdit } from 'src/app/types/product';
+import { IUser } from 'src/app/types/user';
+import { environment } from 'src/environments/environment';
 import { validTypes, fileTypeValidator, fileSizeValidator, checkFileValidator } from '../helpers/file.validator';
 import { isValidImageExtension } from '../helpers/image-helper';
 
@@ -17,12 +20,15 @@ import { isValidImageExtension } from '../helpers/image-helper';
 export class ProductUpdateComponent implements OnInit {
 
   private _fileName: string = '';
+  imageSrc!: string;
+
   set fileName(value) {
     this._fileName = value;
   }
   get fileName() {
     return this._fileName;
   }
+
 
 
   accepted = validTypes.join();
@@ -37,32 +43,42 @@ export class ProductUpdateComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productService: ProductsService,
+    private authService: AuthService,
+    private router: Router,
     private fb: FormBuilder) {
-    this.form = this.fb.group({
-      name: [null,
-        [Validators.required, Validators.minLength(8)]],
-      description:
-        [null, [Validators.required, Validators.minLength(8)]],
-      file: [null,
-        [Validators.required, fileTypeValidator, fileSizeValidator]],
-      productType: [null,
-        [Validators.required, Validators.minLength(8)]],
-      fileName: [null,
-        [Validators.required, checkFileValidator]]
-    })
   }
-  product!: IProduct;
+  product!: IProductEdit;
+  user!: IUser;
+  apiUrl = environment.productApi;
+  private constructFormGroup(product: IProduct) {
+    this.form = this.fb.group({
+      name: [product.name,
+      [Validators.required, Validators.minLength(8)]],
+      description: [product.description, [Validators.required, Validators.minLength(8)]],
+      file: ['',
+        [fileTypeValidator, fileSizeValidator]],
+      productType: [product.productType,
+      [Validators.required, Validators.minLength(8)]],
+      fileName: ['',
+        [checkFileValidator]]
+    });
 
-  private productIdSubject = new BehaviorSubject<string>('');
-  productId$ = this.productIdSubject.asObservable()
-    .pipe(
-      filter(value => value.length !== 0)
-    )
+    this.form.updateValueAndValidity();
+  }
+
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get("id")
-    if (id) {
-      this.productIdSubject.next(id);
-    }
+    this.user = this.authService.getUser() as IUser;
+    this.route.data.subscribe(
+      ({ product }) => {
+        this.product = product;
+        console.log(this.product.user, this.user.id);
+        if (this.product.user !== this.user.id && this.user.role !== 'admin') {
+          this.router.navigateByUrl('/')
+        }
+        console.log(product);
+        this.constructFormGroup(product as IProduct);
+        this.imagePreview = `${this.apiUrl}/products/image/${this.product.id}`
+      })
   }
 
   nameError = '';
