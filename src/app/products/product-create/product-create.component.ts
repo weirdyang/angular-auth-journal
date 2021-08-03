@@ -9,6 +9,8 @@ import { isValidImageExtension } from '../helpers/image-helper';
 import { ProductsService } from 'src/app/services/products.service';
 import { validTypes, fileSizeValidator, fileTypeValidator, checkFileValidator } from '../helpers/file.validator';
 import { Router } from '@angular/router';
+import { constructFormData } from '../helpers/product.processor';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'dm-product-create',
   templateUrl: './product-create.component.html',
@@ -22,20 +24,26 @@ export class ProductCreateComponent implements OnDestroy {
   get fileName() {
     return this._fileName;
   }
-
-
+  private _isSubmitting = false;
+  get isSubmitting() {
+    return this._isSubmitting
+  }
+  set isSubmitting(value) {
+    this._isSubmitting = value;
+  }
   accepted = validTypes.join();
 
   imagePreview: string | ArrayBuffer = '';
 
   form!: FormGroup;
-  errorMessage: string = '';
+
   @ViewChild('createForm', { static: false })
   myForm!: NgForm;
 
   constructor(
     private productService: ProductsService,
     private router: Router,
+    private snackbar: MatSnackBar,
     private fb: FormBuilder) {
     this.form = this.fb.group({
       name: [null,
@@ -53,16 +61,20 @@ export class ProductCreateComponent implements OnDestroy {
   cancel() {
     this.router.navigateByUrl('/');
   }
-  nameError = '';
-  descriptionError = '';
-  fileError = '';
-  productTypeError = '';
+
+  errorMessage: string = '';
+
+  errorObject: Record<string, string> = {
+    name: '',
+    description: '',
+    file: '',
+    productType: ''
+  }
   get formFile() {
     return this.form.get('file');
   }
 
   onFileSelected(event: Event) {
-
     const target = event.target as HTMLInputElement;
     const files = target.files;
     if (files && files.length) {
@@ -98,37 +110,20 @@ export class ProductCreateComponent implements OnDestroy {
     }
     if (error.additionalInfo && error.additionalInfo.length) {
       console.table(error.additionalInfo[0]);
-      for (const item of error.additionalInfo) {
-        console.log(item)
-        const message = item as IErrorMessage;
-        switch (message.name) {
-          default:
-            break;
-          case 'name':
-            this.nameError = message.error;
-            break;
-          case 'file':
-            this.fileError = message.error;
-            break;
-          case 'description':
-            this.descriptionError = message.error;
-            break;
-          case 'productType':
-            this.productTypeError = message.error;
-            break;
-        }
-      }
+      this.processErrorMessage(error);
     }
     this.isSubmitting = false;
     return EMPTY;
   }
-  private _isSubmitting = false;
-  get isSubmitting() {
-    return this._isSubmitting
+
+  private processErrorMessage(error: IHttpError) {
+    for (const item of error.additionalInfo) {
+      console.log(item);
+      const message = item as IErrorMessage;
+      this.errorObject[item.name] = item.error;
+    }
   }
-  set isSubmitting(value) {
-    this._isSubmitting = value;
-  }
+
   protected readonly destroy$ = new Subject();
   private submitSubject = new BehaviorSubject<FormData | null>(null);
   submit$ = this.submitSubject.asObservable()
@@ -136,17 +131,20 @@ export class ProductCreateComponent implements OnDestroy {
       map(value => value as FormData),
       filter(value => value !== null),
       debounceTime(500),
-      tap(_ => console.log('subject')),
       tap(_ => this.isSubmitting = true),
       takeUntil(this.destroy$)
     )
   private resetForm(res: any) {
-    console.log(res);
     this.form.reset();
     this.myForm.resetForm();
     this.isSubmitting = false
     this.errorMessage = '';
-    this.nameError = '';
+    for (const key in this.errorObject) {
+      if (Object.prototype.hasOwnProperty.call(this.errorObject, key)) {
+        this.errorObject[key] = '';
+      }
+    }
+    this.snackbar.open(res.message, 'OK')
   }
   private subscription = this.submit$
     .pipe(
@@ -164,25 +162,9 @@ export class ProductCreateComponent implements OnDestroy {
       );
   }
 
-  private constructFormData() {
-    const formData: FormData = new FormData();
-
-    const { name, description, file, productType } = this.form.value;
-
-    console.log(name);
-
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("file", file);
-    formData.append("productType", productType);
-    return formData;
-  }
   submitForm() {
-    console.log('test');
-    const formData: FormData = this.constructFormData();
-    console.log(formData);
+    const formData: FormData = constructFormData(this.form);
     this.submitSubject.next(formData);
-    console.log('after');
   }
   ngOnDestroy() {
     this.destroy$.next();

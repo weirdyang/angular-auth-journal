@@ -201,6 +201,8 @@ export class ProductUpdateComponent implements OnInit {
     this.isSubmitting = false
     this.errorMessage = '';
     this.nameError = '';
+    console.table(res);
+    this.snackBar.open(res.message, 'OK');
   }
   private formSubscription = this.formSubmit$
     .pipe(
