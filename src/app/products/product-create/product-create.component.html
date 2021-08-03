@@ -1,0 +1,111 @@
+<form [formGroup]="form"
+    #createForm="ngForm"
+    (ngSubmit)="submitForm()"
+    novalidate>
+    <section class="header">
+        <h2>Create New Product</h2>
+        <div class="button-wrapper">
+            <button mat-flat-button
+                [disabled]="!form.valid && !isSubmitting"
+                color="primary">Submit</button>
+        </div>
+    </section>
+    <mat-error *ngIf="errorMessage">
+        {{ errorMessage | titlecase}}
+    </mat-error>
+    <mat-error *ngIf="errorMessage">
+        {{ nameError | titlecase}}
+    </mat-error>
+    <mat-form-field appearance="fill"
+        class="form-item">
+        <mat-label>Product Name</mat-label>
+        <input matInput
+            placeholder="Eg. Super Special Fishcake"
+            formControlName="name">
+        <mat-error *ngIf="form.get('name')?.invalid && !form.get('name')?.hasError('required') || nameError">
+            {{ nameError || "Product name must be at least 8 characters"}}
+        </mat-error>
+        <mat-error *ngIf="form.get('name')?.hasError('required')">
+            This is required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill"
+        class="form-item">
+        <mat-label>Product type</mat-label>
+        <input matInput
+            placeholder="Eg. Cooked food"
+            formControlName="productType">
+        <mat-error *ngIf="(form.get('productType')?.invalid && !form.get('productType')?.hasError('required'))">
+            {{ productTypeError || "Product type must be at least 8 characters"}}
+        </mat-error>
+        <mat-error *ngIf="form.get('productType')?.hasError('required')">
+            This is required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill"
+        class="form-item">
+        <mat-label>Product Description</mat-label>
+        <textarea matInput
+            [rows]="8"
+            formControlName="description"
+            placeholder="Eg. Super Special Fishcake is 100% made from wild caught salmon"></textarea>
+        <mat-error *ngIf="form.get('description')?.invalid && !form.get('description')?.hasError('required')">
+            {{ descriptionError || "Product description must be at least 8 characters"}}
+        </mat-error>
+        <mat-error *ngIf="form.get('description')?.hasError('required')">
+            This is required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill"
+        class="form-item">
+        <mat-label>Product Image</mat-label>
+        <input matInput
+            [readonly]="true"
+            formControlName="fileName"
+            (click)="fileUpload.click()"
+            placeholder="
+            No file selected">
+        <button mat-mini-fab
+            matSuffix
+            color="primary"
+            class="upload-btn"
+            type="button"
+            (click)="fileUpload.click()">
+            <mat-icon>attach_file</mat-icon>
+        </button>
+        <mat-error *ngIf="formFile?.errors?.invalidFileSize">
+            Max file size is 10mb
+        </mat-error>
+        <mat-error *ngIf="formFile?.errors?.invalidType">
+            Only png and jpg format allowed
+        </mat-error>
+        <mat-error *ngIf="form.get('fileName')?.hasError('required')">
+            This is required.
+        </mat-error>
+    </mat-form-field>
+    <section class="form-item">
+        <article class="file-input">
+            <input type="file"
+                class="file-input"
+                formControlName="productType"
+                (change)="onFileSelected($event)"
+                [accept]="accepted"
+                #fileUpload>
+
+            <div class="file-upload">
+                <div class="preview-image"
+                    *ngIf="imagePreview !== ''
+                && imagePreview && form.get('file')?.valid">
+
+                    <img [src]="imagePreview"
+                        [alt]="fileName">
+                </div>
+                <div>
+                </div>
+            </div>
+        </article>
+        <mat-error *ngIf="fileError">
+            {{ fileError }}
+        </mat-error>
+    </section>
+</form>

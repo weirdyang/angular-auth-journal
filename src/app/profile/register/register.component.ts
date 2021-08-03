@@ -10,6 +10,7 @@ import { RegisterUser } from 'src/app/types/user';
 import { passwordMatchValidator } from './password-match.validator';
 import { createPasswordStrengthValidator } from './password.validator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { IErrorMessage } from 'src/app/types/http-error';
 // need to inject select module into root
 //https://github.com/angular/angular/issues/35264
 @Component({
@@ -87,9 +88,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
           this.snackBar.open(result.message, 'OK');
           this.dialogRef.close();
         },
-        error: err => this.snackBar.open(err, 'OK')
+        error: err => {
+          const { error } = err;
+          let errorMessage = '';
+          if (error.additionalInfo && error.additionalInfo.length) {
+            error.additionalInfo.forEach((element: IErrorMessage) => {
+              errorMessage += `${element.error}. `;
+            });
+          }
+          this.snackBar.open(`${errorMessage}`, 'OK')
+        }
       })
-
   }
   dismiss() {
     this.dialogRef.close();
