@@ -82,9 +82,7 @@
         <mat-error *ngIf="form.get('fileName')?.hasError('required')">
             This is required.
         </mat-error>
-
     </mat-form-field>
-
     <section class="form-item">
         <article class="file-input">
             <input type="file"
@@ -96,10 +94,10 @@
             <div class="file-upload">
                 <div class="preview-image"
                     *ngIf="imagePreview !== ''
-                && imagePreview && form.get('file')?.valid">
+                && imagePreview">
 
                     <img [src]="imagePreview"
-                        [alt]="fileName">
+                        [alt]="product.name">
                 </div>
                 <div>
                 </div>

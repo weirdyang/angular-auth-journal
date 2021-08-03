@@ -1,26 +1,34 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { BehaviorSubject, EMPTY, Subject } from 'rxjs';
-import { catchError, debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
-
-import { IErrorMessage, IHttpError } from 'src/app/types/http-error';
-
-import { isValidImageExtension } from '../helpers/image-helper';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormGroup, NgForm, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EMPTY, Subject, BehaviorSubject } from 'rxjs';
+import { map, filter, debounceTime, tap, takeUntil, switchMap, catchError } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
 import { ProductsService } from 'src/app/services/products.service';
-import { validTypes, fileSizeValidator, fileTypeValidator, checkFileValidator } from '../helpers/file.validator';
+import { IHttpError, IErrorMessage } from 'src/app/types/http-error';
+import { IProduct, IProductEdit } from 'src/app/types/product';
+import { IUser } from 'src/app/types/user';
+import { environment } from 'src/environments/environment';
+import { validTypes, fileTypeValidator, fileSizeValidator, checkFileValidator } from '../helpers/file.validator';
+import { isValidImageExtension } from '../helpers/image-helper';
+
 @Component({
-  selector: 'dm-product-create',
-  templateUrl: './product-create.component.html',
-  styleUrls: ['./product-create.component.scss']
+  selector: 'dm-product-update',
+  templateUrl: './product-update.component.html',
+  styleUrls: ['./product-update.component.scss']
 })
-export class ProductCreateComponent implements OnDestroy {
+export class ProductUpdateComponent implements OnInit {
+
   private _fileName: string = '';
+  imageSrc!: string;
+
   set fileName(value) {
     this._fileName = value;
   }
   get fileName() {
     return this._fileName;
   }
+
 
 
   accepted = validTypes.join();
@@ -33,20 +41,44 @@ export class ProductCreateComponent implements OnDestroy {
   myForm!: NgForm;
 
   constructor(
+    private route: ActivatedRoute,
     private productService: ProductsService,
+    private authService: AuthService,
+    private router: Router,
     private fb: FormBuilder) {
+  }
+  product!: IProductEdit;
+  user!: IUser;
+  apiUrl = environment.productApi;
+  private constructFormGroup(product: IProduct) {
     this.form = this.fb.group({
-      name: [null,
-        [Validators.required, Validators.minLength(8)]],
-      description:
-        [null, [Validators.required, Validators.minLength(8)]],
-      file: [null,
-        [Validators.required, fileTypeValidator, fileSizeValidator]],
-      productType: [null,
-        [Validators.required, Validators.minLength(8)]],
-      fileName: [null,
-        [Validators.required, checkFileValidator]]
-    })
+      name: [product.name,
+      [Validators.required, Validators.minLength(8)]],
+      description: [product.description, [Validators.required, Validators.minLength(8)]],
+      file: ['',
+        [fileTypeValidator, fileSizeValidator]],
+      productType: [product.productType,
+      [Validators.required, Validators.minLength(8)]],
+      fileName: ['',
+        [checkFileValidator]]
+    });
+
+    this.form.updateValueAndValidity();
+  }
+
+  ngOnInit(): void {
+    this.user = this.authService.getUser() as IUser;
+    this.route.data.subscribe(
+      ({ product }) => {
+        this.product = product;
+        console.log(this.product.user, this.user.id);
+        if (this.product.user !== this.user.id && this.user.role !== 'admin') {
+          this.router.navigateByUrl('/')
+        }
+        console.log(product);
+        this.constructFormGroup(product as IProduct);
+        this.imagePreview = `${this.apiUrl}/products/image/${this.product.id}`
+      })
   }
 
   nameError = '';
@@ -68,17 +100,17 @@ export class ProductCreateComponent implements OnDestroy {
       reader.onload = () => {
         if (reader.result) {
           this.form.patchValue({
-            fileName: file.name,
             file: file,
           });
           if (isValidImageExtension(file.name)) {
             this.imagePreview = reader.result;
             this.form.get('file')?.updateValueAndValidity()
-            this.form.get('fileName')?.updateValueAndValidity()
           }
         }
       }
-
+      this.form.patchValue({
+        fileName: file.name,
+      });
       if (isValidImageExtension(file.name)) {
         reader.readAsDataURL(file);
       }

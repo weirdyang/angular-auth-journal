@@ -10,6 +10,7 @@ const routes: Routes = [
     loadChildren: () => import('./product-create/product-create.module').then(m => m.ProductCreateModule),
     canActivate: [AuthGuard]
   },
+  { path: 'update', loadChildren: () => import('./product-update/product-update.module').then(m => m.ProductUpdateModule) },
 ];
 
 @NgModule({

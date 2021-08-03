@@ -31,7 +31,7 @@ export class AuthService {
     return this.getUser() !== null;
   }
 
-  setUser = (user: Record<string, any>) => {
+  setUser = (user: IUser) => {
     window.localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this._currentUserSubject.next(user as IUser);
   }
@@ -42,7 +42,8 @@ export class AuthService {
   getUser = (): IUser | null => {
     const user = window.localStorage.getItem(this.USER_KEY);
     if (user) {
-      return JSON.parse(user);
+      console.log(JSON.parse(user))
+      return JSON.parse(user).user;
     }
     return null;
   };

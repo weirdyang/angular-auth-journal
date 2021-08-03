@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { IProduct } from '../types/product';
+import { IProduct, IProductEdit } from '../types/product';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +51,7 @@ export class ProductsService {
       )
   }
   getProductById(productId: string) {
-    return this.http.get(`${this.baseUrl}/details/${productId}`)
+    return this.http.get<IProductEdit>(`${this.baseUrl}/details/${productId}`)
       .pipe(
         catchError(error => this.handleError(error))
       )
