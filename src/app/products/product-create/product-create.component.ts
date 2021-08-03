@@ -1,17 +1,19 @@
-import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { createPasswordStrengthValidator } from 'src/app/profile/register/password.validator';
-import { ErrorMessage, HttpError } from 'src/app/types/http-error';
-import { createExtensionValidator } from '../helpers/extension.validator';
-import { isValidImageExtension } from '../helpers/image-helper';
+import { BehaviorSubject, EMPTY, Subject } from 'rxjs';
+import { catchError, debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 
+import { ErrorMessage, HttpError } from 'src/app/types/http-error';
+
+import { isValidImageExtension } from '../helpers/image-helper';
+import { ProductsService } from '../services/products.service';
+import { validTypes, fileSizeValidator, fileTypeValidator, checkFileValidator } from '../helpers/file.validator';
 @Component({
   selector: 'dm-product-create',
   templateUrl: './product-create.component.html',
   styleUrls: ['./product-create.component.scss']
 })
-export class ProductCreateComponent {
+export class ProductCreateComponent implements OnDestroy {
   private _fileName: string = '';
   set fileName(value) {
     this._fileName = value;
@@ -19,9 +21,10 @@ export class ProductCreateComponent {
   get fileName() {
     return this._fileName;
   }
-  validTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 
-  accepted = this.validTypes.join();
+
+  accepted = validTypes.join();
+
   imagePreview: string | ArrayBuffer = '';
 
   form!: FormGroup;
@@ -30,15 +33,19 @@ export class ProductCreateComponent {
   myForm!: NgForm;
 
   constructor(
-    private http: HttpClient,
-    private fb: FormBuilder,
-    private cdr: ChangeDetectorRef) {
+    private productService: ProductsService,
+    private fb: FormBuilder) {
     this.form = this.fb.group({
-      name: [null, [Validators.required, Validators.minLength(8)]],
-      description: [null, [Validators.required, Validators.minLength(8)]],
-      file: [null, [Validators.required]],
-      productType: [null, [Validators.required, Validators.minLength(8)]],
-      fileName: [null, [Validators.required, createExtensionValidator()]]
+      name: [null,
+        [Validators.required, Validators.minLength(8)]],
+      description:
+        [null, [Validators.required, Validators.minLength(8)]],
+      file: [null,
+        [Validators.required, fileTypeValidator, fileSizeValidator]],
+      productType: [null,
+        [Validators.required, Validators.minLength(8)]],
+      fileName: [null,
+        [Validators.required, checkFileValidator]]
     })
   }
 
@@ -46,6 +53,9 @@ export class ProductCreateComponent {
   descriptionError = '';
   fileError = '';
   productTypeError = '';
+  get formFile() {
+    return this.form.get('file');
+  }
 
   onFileSelected(event: Event) {
 
@@ -101,25 +111,75 @@ export class ProductCreateComponent {
         }
       }
     }
+    this.isSubmitting = false;
+    return EMPTY;
   }
-  submitForm() {
-    console.log(this.form);
-    const formData: any = new FormData();
+  private _isSubmitting = false;
+  get isSubmitting() {
+    return this._isSubmitting
+  }
+  set isSubmitting(value) {
+    this._isSubmitting = value;
+  }
+  protected readonly destroy$ = new Subject();
+  private submitSubject = new BehaviorSubject<FormData | null>(null);
+  submit$ = this.submitSubject.asObservable()
+    .pipe(
+      map(value => value as FormData),
+      filter(value => value !== null),
+      debounceTime(500),
+      tap(_ => console.log('subject')),
+      tap(_ => this.isSubmitting = true),
+      takeUntil(this.destroy$)
+    )
+  private resetForm(res: any) {
+    console.log(res);
+    this.form.reset();
+    this.myForm.resetForm();
+    this.isSubmitting = false
+    this.errorMessage = '';
+    this.nameError = '';
+  }
+  private subscription = this.submit$
+    .pipe(
+      tap(data => console.log(data, 'subscription')),
+      switchMap(formData =>
+        this.postFormData(formData)),
+      catchError(err => this.processError(err.error)),
+    ).subscribe((res) => this.resetForm(res)
+    );
+
+
+  private postFormData(formData: FormData) {
+    return this.productService.createProduct(formData)
+      .pipe(
+        catchError(err => this.processError(err.error))
+      );
+  }
+
+  private constructFormData() {
+    const formData: FormData = new FormData();
+
     const { name, description, file, productType } = this.form.value;
+
+    console.log(name);
+
     formData.append("name", name);
     formData.append("description", description);
     formData.append("file", file);
-    formData.append("productType", productType)
+    formData.append("productType", productType);
+    return formData;
+  }
+  submitForm() {
+    console.log('test');
+    const formData: FormData = this.constructFormData();
     console.log(formData);
-    this.http.post('api/products/create', formData).subscribe(
-      {
-        next: () => console.log('done'),
-        error: (err) => this.processError(err.error),
-        complete: () => {
-          this.form.reset();
-          this.myForm.resetForm();
-        }
-      }
-    );
+    this.submitSubject.next(formData);
+    console.log('after');
+  }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.subscription.unsubscribe();
   }
 }

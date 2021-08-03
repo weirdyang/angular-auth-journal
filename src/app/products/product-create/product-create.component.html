@@ -6,7 +6,7 @@
         <h2>Create New Product</h2>
         <div class="button-wrapper">
             <button mat-flat-button
-                [disabled]="!form.valid"
+                [disabled]="!form.valid && !isSubmitting"
                 color="primary">Submit</button>
         </div>
     </section>
@@ -73,7 +73,10 @@
             (click)="fileUpload.click()">
             <mat-icon>attach_file</mat-icon>
         </button>
-        <mat-error *ngIf="form.get('fileName')?.errors?.invalidExtension">
+        <mat-error *ngIf="formFile?.errors?.invalidFileSize">
+            Max file size is 10mb
+        </mat-error>
+        <mat-error *ngIf="formFile?.errors?.invalidType">
             Only png and jpg format allowed
         </mat-error>
         <mat-error *ngIf="form.get('fileName')?.hasError('required')">

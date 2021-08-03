@@ -12,7 +12,7 @@ export class ProductsService {
   constructor(private http: HttpClient) { }
   apiUrl = environment.userApi;
   createProduct(formData: FormData) {
-    this.http.post(`${this.apiUrl}/products/create`, formData)
+    return this.http.post(`${this.apiUrl}/products/create`, formData)
       .pipe(
         catchError(error => this.handleError(error))
       )
@@ -30,6 +30,6 @@ export class ProductsService {
       errorMessage = `Server returned code: ${err.status}, error message is: ${err.message}`;
     }
     console.error(errorMessage);
-    return throwError(errorMessage);
+    return throwError(err);
   }
 }
