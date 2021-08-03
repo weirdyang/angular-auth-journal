@@ -6,7 +6,7 @@
         <h2>Create New Product</h2>
         <div class="button-wrapper">
             <button mat-flat-button
-                [disabled]="!form.valid && !isSubmitting"
+                [disabled]="!form.valid || isSubmitting"
                 color="primary">Submit</button>
         </div>
     </section>

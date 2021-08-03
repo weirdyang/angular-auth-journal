@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, NgForm, FormBuilder, Validators, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, Subject, BehaviorSubject } from 'rxjs';
-import { map, filter, debounceTime, tap, takeUntil, switchMap, catchError } from 'rxjs/operators';
+import { EMPTY, Subject, BehaviorSubject, combineLatest } from 'rxjs';
+import { map, filter, debounceTime, tap, takeUntil, switchMap, catchError, share, merge } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProductsService } from 'src/app/services/products.service';
 import { IHttpError, IErrorMessage } from 'src/app/types/http-error';
@@ -178,6 +178,7 @@ export class ProductUpdateComponent implements OnInit {
       debounceTime(500),
       tap(_ => console.log('subject')),
       tap(_ => this.isSubmitting = true),
+      share(),
       takeUntil(this.destroy$)
     )
 
@@ -189,12 +190,13 @@ export class ProductUpdateComponent implements OnInit {
       debounceTime(500),
       tap(_ => console.log('subject')),
       tap(_ => this.isSubmitting = true),
+      share(),
       takeUntil(this.destroy$)
     )
   private resetForm(res: any) {
-    console.log(res);
-    this.form.reset();
-    this.myForm.resetForm();
+    // console.log(res);
+    // this.form.reset();
+    // this.myForm.resetForm();
     this.isSubmitting = false
     this.errorMessage = '';
     this.nameError = '';
@@ -226,7 +228,7 @@ export class ProductUpdateComponent implements OnInit {
       .pipe(
         catchError(err => this.processError(err.error))
       );
-  }
+  };
 
   private constructFormData() {
     const formData: FormData = new FormData();
@@ -245,6 +247,7 @@ export class ProductUpdateComponent implements OnInit {
     return formData;
   }
   submitForm() {
+    this.isSubmitting = true;
     const { file } = this.form.value;
     if (file) {
       console.log(this.form.get('file'));

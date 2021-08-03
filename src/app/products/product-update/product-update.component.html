@@ -1,12 +1,20 @@
 <form [formGroup]="form"
     #createForm="ngForm"
     (ngSubmit)="submitForm()"
+    [ngClass]="{'bd-overlay-dark': isSubmitting}"
     novalidate>
+
     <section class="header">
-        <h2>Create New Product</h2>
+        <div *ngIf="isSubmitting; else elseBlock">
+            <h2>Submitting</h2>
+        </div>
+        <ng-template #elseBlock>
+            <h2>Edit Product</h2>
+        </ng-template>
+
         <div class="button-wrapper">
             <button mat-flat-button
-                [disabled]="!form.valid && !isSubmitting"
+                [disabled]="!form.valid || isSubmitting"
                 color="primary">Submit</button>
         </div>
     </section>
