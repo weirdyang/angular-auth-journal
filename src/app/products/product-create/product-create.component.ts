@@ -69,7 +69,6 @@ export class ProductCreateComponent implements OnDestroy {
         if (reader.result) {
           this.form.patchValue({
             file: file,
-            fileName: file.name,
           });
           if (isValidImageExtension(file.name)) {
             this.imagePreview = reader.result;
@@ -77,7 +76,12 @@ export class ProductCreateComponent implements OnDestroy {
           }
         }
       }
-      reader.readAsDataURL(file);
+      this.form.patchValue({
+        fileName: file.name,
+      });
+      if (isValidImageExtension(file.name)) {
+        reader.readAsDataURL(file);
+      }
     }
   }
   processError(error: IHttpError) {
@@ -146,8 +150,7 @@ export class ProductCreateComponent implements OnDestroy {
       switchMap(formData =>
         this.postFormData(formData)),
       catchError(err => this.processError(err.error)),
-    ).subscribe((res) => this.resetForm(res)
-    );
+    ).subscribe((res) => this.resetForm(res));
 
 
   private postFormData(formData: FormData) {
