@@ -3,37 +3,22 @@ import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { BehaviorSubject, EMPTY, Subject } from 'rxjs';
 import { catchError, debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 
-import { IErrorMessage, IHttpError } from 'src/app/types/http-error';
-
 import { isValidImageExtension } from '../helpers/image-helper';
 import { ProductsService } from 'src/app/services/products.service';
 import { validTypes, fileSizeValidator, fileTypeValidator, checkFileValidator } from '../helpers/file.validator';
 import { Router } from '@angular/router';
 import { constructFormData } from '../helpers/product.processor';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProductBaseComponent } from '../product-base/product-base.component';
 @Component({
   selector: 'dm-product-create',
   templateUrl: './product-create.component.html',
   styleUrls: ['./product-create.component.scss']
 })
-export class ProductCreateComponent implements OnDestroy {
-  private _fileName: string = '';
-  set fileName(value) {
-    this._fileName = value;
-  }
-  get fileName() {
-    return this._fileName;
-  }
-  private _isSubmitting = false;
-  get isSubmitting() {
-    return this._isSubmitting
-  }
-  set isSubmitting(value) {
-    this._isSubmitting = value;
-  }
+export class ProductCreateComponent extends ProductBaseComponent implements OnDestroy {
+
   accepted = validTypes.join();
 
-  imagePreview: string | ArrayBuffer = '';
 
   form!: FormGroup;
 
@@ -42,9 +27,10 @@ export class ProductCreateComponent implements OnDestroy {
 
   constructor(
     private productService: ProductsService,
-    private router: Router,
+    public router: Router,
     private snackbar: MatSnackBar,
     private fb: FormBuilder) {
+    super(router);
     this.form = this.fb.group({
       name: [null,
         [Validators.required, Validators.minLength(8)]],
@@ -58,21 +44,6 @@ export class ProductCreateComponent implements OnDestroy {
         [Validators.required, checkFileValidator]]
     })
   }
-  cancel() {
-    this.router.navigateByUrl('/');
-  }
-
-  errorMessage: string = '';
-
-  errorObject: Record<string, string> = {
-    name: '',
-    description: '',
-    file: '',
-    productType: ''
-  }
-  get formFile() {
-    return this.form.get('file');
-  }
 
   onFileSelected(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -83,10 +54,8 @@ export class ProductCreateComponent implements OnDestroy {
 
       reader.onload = () => {
         if (reader.result) {
-
           if (isValidImageExtension(file.name)) {
-            this.imagePreview = reader.result;
-
+            this.imageSrc = reader.result;
           }
         }
       }
@@ -99,29 +68,6 @@ export class ProductCreateComponent implements OnDestroy {
       if (isValidImageExtension(file.name)) {
         reader.readAsDataURL(file);
       }
-    }
-  }
-  processError(error: IHttpError) {
-    console.log(error);
-    if (error.message) {
-      this.errorMessage = error.message;
-    }
-    if (error.additionalInfo) {
-      console.log(error.additionalInfo);
-    }
-    if (error.additionalInfo && error.additionalInfo.length) {
-      console.table(error.additionalInfo[0]);
-      this.processErrorMessage(error);
-    }
-    this.isSubmitting = false;
-    return EMPTY;
-  }
-
-  private processErrorMessage(error: IHttpError) {
-    for (const item of error.additionalInfo) {
-      console.log(item);
-      const message = item as IErrorMessage;
-      this.errorObject[item.name] = item.error;
     }
   }
 

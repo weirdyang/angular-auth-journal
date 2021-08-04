@@ -114,10 +114,10 @@
 
             <div class="file-upload">
                 <div class="preview-image"
-                    *ngIf="imagePreview !== ''
-                && imagePreview && form.get('file')?.valid">
+                    *ngIf="imageSrc !== ''
+                && imageSrc && form.get('file')?.valid">
 
-                    <img [src]="imagePreview"
+                    <img [src]="imageSrc"
                         [alt]="fileName">
                 </div>
                 <div>
