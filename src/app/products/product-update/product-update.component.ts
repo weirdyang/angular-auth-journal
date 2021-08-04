@@ -13,24 +13,17 @@ import { validTypes, fileTypeValidator, fileSizeValidator, checkFileValidator, c
 import { isValidImageExtension } from '../helpers/image-helper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { constructFormData } from '../helpers/product.processor';
+import { ProductBaseComponent } from '../product-base/product-base.component';
 @Component({
   selector: 'dm-product-update',
   templateUrl: './product-update.component.html',
   styleUrls: ['./product-update.component.scss']
 })
-export class ProductUpdateComponent implements OnInit {
+export class ProductUpdateComponent extends ProductBaseComponent implements OnInit {
 
-  private _fileName: string = '';
-  imageSrc!: string;
 
-  set fileName(value) {
-    this._fileName = value;
-  }
-  get fileName() {
-    return this._fileName;
-  }
+
   accepted = validTypes.join();
-  imagePreview: string | ArrayBuffer = '';
 
   form!: FormGroup;
   errorMessage: string = '';
@@ -41,10 +34,15 @@ export class ProductUpdateComponent implements OnInit {
     private route: ActivatedRoute,
     private productService: ProductsService,
     private authService: AuthService,
-    private router: Router,
+    public router: Router,
     private fb: FormBuilder,
     private snackBar: MatSnackBar) {
+    super(router);
     this.user = this.authService.getUser() as IUser;
+
+  }
+  get imageUrl() {
+    return `${this.apiUrl}/products/image/${this.product.id}`;
   }
   product!: IProductEdit;
   user!: IUser;
@@ -86,7 +84,7 @@ export class ProductUpdateComponent implements OnInit {
         }
         console.log(product);
         this.constructFormGroup(product as IProduct);
-        this.imagePreview = `${this.apiUrl}/products/image/${this.product.id}`
+        this.imageSrc = this.imageUrl;
       })
   }
 
@@ -109,71 +107,37 @@ export class ProductUpdateComponent implements OnInit {
       reader.onload = () => {
         this.processFile(reader, file);
       }
-
-      if (isValidImageExtension(file.name)) {
-        reader.readAsDataURL(file);
-      } else {
-        this.snackBar.open('Only .png and .jpg files are allowed', 'OK');
-      }
-    }
-  }
-  private processFile(reader: FileReader, file: File) {
-    if (reader.result) {
       this.form.patchValue({
         fileName: file.name,
         file: file,
       });
+      this.form.get('file')?.updateValueAndValidity();
+      this.form.get('fileName')?.updateValueAndValidity();
       if (isValidImageExtension(file.name)) {
-        this.imagePreview = reader.result;
-        this.form.get('file')?.updateValueAndValidity();
-        this.form.get('fileName')?.updateValueAndValidity();
+        reader.readAsDataURL(file);
+      };
+    }
+  }
+  private processFile(reader: FileReader, file: File) {
+    if (reader.result) {
+      if (isValidImageExtension(file.name)) {
+        this.imageSrc = reader.result;
       }
     }
   }
-
-  private processErrorMessage(item: IErrorMessage) {
-    const message = item as IErrorMessage;
-    switch (message.name) {
-      default:
-        break;
-      case 'name':
-        this.nameError = message.error;
-        break;
-      case 'file':
-        this.fileError = message.error;
-        break;
-      case 'description':
-        this.descriptionError = message.error;
-        break;
-      case 'productType':
-        this.productTypeError = message.error;
-        break;
-    }
-  }
-  processError(error: IHttpError) {
-    console.log(error);
-    if (error.message) {
-      this.errorMessage = error.message;
-    }
-    if (error.additionalInfo) {
-      console.log(error.additionalInfo);
-    }
-    if (error.additionalInfo && error.additionalInfo.length) {
-      console.table(error.additionalInfo[0]);
-      for (const item of error.additionalInfo) {
-        this.processErrorMessage(item);
-      }
-    }
-    this.isSubmitting = false;
-    return EMPTY;
-  }
-  private _isSubmitting = false;
-
-  get isSubmitting() {
-    return this._isSubmitting
-  }
-  set isSubmitting(value) {
-    this._isSubmitting = value;
+  undoChanges() {
+    this.form = this.fb.group({
+      name: [this.product.name,
+      [Validators.required, Validators.minLength(8)]],
+      description: [this.product.description, [Validators.required, Validators.minLength(8)]],
+      file: ['',
+        [this.conditionalFileCheck]],
+      productType: [this.product.productType,
+      [Validators.required, Validators.minLength(8)]],
+      fileName: ['',
+        [checkFileValidator]]
+    });
+    this.imageSrc = this.imageUrl;
   }
   protected readonly destroy$ = new Subject();
   private formSubmitSubject = new BehaviorSubject<FormData | null>(null);

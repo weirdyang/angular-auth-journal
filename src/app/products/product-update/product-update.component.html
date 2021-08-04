@@ -21,7 +21,8 @@
         <span class="spacer">
         </span>
         <button mat-mini-fab
-            type="reset"
+            type="button"
+            (click)="undoChanges()"
             [disabled]="isSubmitting"
             matTooltip="Reset the form"
             color="accent">
@@ -48,8 +49,8 @@
         <input matInput
             placeholder="Eg. Super Special Fishcake"
             formControlName="name">
-        <mat-error *ngIf="form.get('name')?.invalid && !form.get('name')?.hasError('required') || nameError">
-            {{ nameError || "Product name must be at least 8 characters"}}
+        <mat-error *ngIf="form.get('name')?.invalid && !form.get('name')?.hasError('required')">
+            {{ "Product name must be at least 8 characters"}}
         </mat-error>
         <mat-error *ngIf="form.get('name')?.hasError('required')">
             This is required.
@@ -62,7 +63,7 @@
             placeholder="Eg. Cooked food"
             formControlName="productType">
         <mat-error *ngIf="(form.get('productType')?.invalid && !form.get('productType')?.hasError('required'))">
-            {{ productTypeError || "Product type must be at least 8 characters"}}
+            {{ "Product type must be at least 8 characters"}}
         </mat-error>
         <mat-error *ngIf="form.get('productType')?.hasError('required')">
             This is required.
@@ -76,7 +77,7 @@
             formControlName="description"
             placeholder="Eg. Super Special Fishcake is 100% made from wild caught salmon"></textarea>
         <mat-error *ngIf="form.get('description')?.invalid && !form.get('description')?.hasError('required')">
-            {{ descriptionError || "Product description must be at least 8 characters"}}
+            {{ "Product description must be at least 8 characters"}}
         </mat-error>
         <mat-error *ngIf="form.get('description')?.hasError('required')">
             This is required.
@@ -99,16 +100,13 @@
             (click)="fileUpload.click()">
             <mat-icon>attach_file</mat-icon>
         </button>
-        <mat-error *ngIf="formFile?.errors?.invalidFileSize">
-            Max file size is 10mb
-        </mat-error>
-        <mat-error *ngIf="formFile?.errors?.invalidType">
-            Only png and jpg format allowed
-        </mat-error>
-        <mat-error *ngIf="form.get('fileName')?.hasError('required')">
-            This is required.
+        <mat-error>
+            {{ formFile?.errors?.invalidFileSize ? "Max file size is 10mb." : '' }}
+            {{ formFile?.errors?.invalidType ? "Only images in png and jpg format are allowed." : '' }}
+            {{ formFile?.errors?.required ? " This is required.": '' }}
         </mat-error>
     </mat-form-field>
+
     <section class="form-item">
         <article class="file-input">
             <input type="file"
@@ -119,18 +117,15 @@
 
             <div class="file-upload">
                 <div class="preview-image"
-                    *ngIf="imagePreview !== ''
-                && imagePreview">
+                    *ngIf="imageSrc !== ''
+                && imageSrc">
 
-                    <img [src]="imagePreview"
+                    <img [src]="imageSrc"
                         [alt]="product.name">
                 </div>
                 <div>
                 </div>
             </div>
         </article>
-        <mat-error *ngIf="fileError">
-            {{ fileError }}
-        </mat-error>
     </section>
 </form>
