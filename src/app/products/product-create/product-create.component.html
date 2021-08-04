@@ -97,16 +97,11 @@
             (click)="fileUpload.click()">
             <mat-icon>attach_file</mat-icon>
         </button>
-        <mat-error *ngIf="formFile?.errors?.invalidFileSize">
-            Max file size is 10mb
+        <mat-error>
+            {{ formFile?.errors?.invalidFileSize ? "Max file size is 10mb." : '' }}
+            {{ formFile?.errors?.invalidType ? "Only images in png and jpg format are allowed." : '' }}
+            {{ formFile?.errors?.required ? " This is required.": '' }}
         </mat-error>
-        <mat-error *ngIf="formFile?.errors?.invalidType">
-            Only png and jpg format allowed
-        </mat-error>
-        <mat-error *ngIf="form.get('fileName')?.hasError('required')">
-            This is required.
-        </mat-error>
-
     </mat-form-field>
 
     <section class="form-item">

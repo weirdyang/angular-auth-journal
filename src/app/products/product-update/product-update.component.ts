@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, NgForm, FormBuilder, Validators, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, Subject, BehaviorSubject, combineLatest } from 'rxjs';
+import { EMPTY, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, debounceTime, tap, takeUntil, switchMap, catchError, share, merge } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProductsService } from 'src/app/services/products.service';
