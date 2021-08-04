@@ -8,7 +8,7 @@ import { ProductCreateModule } from './product-create/product-create.module';
 
 @NgModule({
   declarations: [
-    ProductsComponent
+    ProductsComponent,
   ],
   imports: [
     CommonModule,
