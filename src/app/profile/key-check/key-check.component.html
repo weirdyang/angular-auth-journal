@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Validate Key</h2>
+<mat-dialog-content class="dialog-container"
+    [formGroup]="form">
+    <mat-form-field appearance="fill">
+        <mat-label>Sign up key</mat-label>
+        <input matInput
+            type="text"
+            formControlName="key"
+            placeholder="Enter the key provided to you for sign up">
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button
+        color="primary"
+        [disabled]="!form.valid"
+        (click)="submit()">
+        <mat-icon>save</mat-icon>
+    </button>
+    <button mat-raised-button
+        color="primary"
+        [disabled]="!form.valid"
+        (click)="cancel()">
+        <mat-icon>cancel</mat-icon>
+    </button>
+</mat-dialog-actions>

@@ -1,3 +1,4 @@
+import { IErrorMessage } from './http-error'
 export interface Profile {
     username: string;
     following: boolean;
@@ -28,5 +29,5 @@ export class RegisterUser {
 
 export interface IApiResponse {
     message: string;
-    hasError: boolean;
+    additonalInfo: IErrorMessage[];
 }

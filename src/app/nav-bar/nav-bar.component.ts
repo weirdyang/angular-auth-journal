@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoginComponent } from '../profile/login/login.component';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { KeyCheckComponent } from '../profile/key-check/key-check.component';
 interface MenuItem {
   name: string;
   path: string;
@@ -50,11 +51,24 @@ export class NavBarComponent implements OnDestroy, OnInit {
   toggleDarkEvent = new EventEmitter<boolean>();
 
   dialogSubscription?: Subscription;
-
+  openKeyDialog() {
+    const dialogRef = this.dialog.open(KeyCheckComponent, {
+      width: '450px',
+      disableClose: true
+    })
+    this.dialogSubscription = dialogRef
+      .afterClosed()
+      .subscribe(result => {
+        if (result) {
+          console.log(result);
+          this.openRegisterDialog();
+        }
+      });
+  }
   openRegisterDialog() {
     const dialogRef = this.dialog.open(RegisterComponent, {
       width: '450px',
-      disableClose: true
+      disableClose: true,
     })
     this.dialogSubscription = dialogRef
       .afterClosed()

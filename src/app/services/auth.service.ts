@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, tap } from 'rxjs/operators';
@@ -47,25 +47,21 @@ export class AuthService {
     return null;
   };
 
-  handleError(err: any): Observable<never> {
-    let errorMessage: string = '';
+  private handleError(err: HttpErrorResponse): Observable<never> {
+    // in a real world app, we may send the server to some remote logging infrastructure
+    // instead of just logging it to the console
+    let errorMessage = '';
     if (err.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
       errorMessage = `An error occurred: ${err.error.message}`;
     } else {
-      console.dir(err);
-      if (err.error.errors?.email) {
-        errorMessage += 'Email is in use. '
-      }
-      if (err.error.errors?.username) {
-        errorMessage += 'Username is in use.'
-      }
-      if (err.error?.message) {
-        errorMessage = err.error.message;
-      }
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      errorMessage = `Server returned code: ${err.status}, error message is: ${err.message}`;
     }
+    console.error(errorMessage);
     return throwError(err);
   }
-
 
   loginUser(user: ILogin) {
     console.log(user);
@@ -82,5 +78,13 @@ export class AuthService {
         catchError(error => this.handleError(error)),
       );
   }
+
+  checkKey(key: string) {
+    return this.http.get<IApiResponse>(`${this.apiUrl}/auth/key/${key}`)
+      .pipe(
+        catchError(error => this.handleError(error)),
+      );
+  }
+
   constructor(private http: HttpClient) { }
 }

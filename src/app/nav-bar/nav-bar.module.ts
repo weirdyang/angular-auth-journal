@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RegisterModule } from '../profile/register/register.module';
 import { LoginModule } from '../profile/login/login.module';
 import { MatDialogModule } from '@angular/material/dialog';
+import { KeyCheckModule } from '../profile/key-check/key-check.module';
 @NgModule({
   declarations: [NavBarComponent],
   imports: [
@@ -27,7 +28,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatMenuModule,
     MatTooltipModule,
     RegisterModule,
-    LoginModule
+    LoginModule,
+    KeyCheckModule
   ],
   exports: [NavBarComponent, MatButtonModule]
 })
